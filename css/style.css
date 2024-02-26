@@ -12,5 +12,6 @@
 
 #layer_list{
     background-color:#ffffff;
-
+    max-height:300px;
+    overflow-y:auto;
 }

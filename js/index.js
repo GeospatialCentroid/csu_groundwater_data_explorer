@@ -110,6 +110,7 @@ parse_annotation= function(json,extra){
          rect.id=layer_rects.length-1
          rect.on('click', function () {
             toggle_layer(this.id)
+            this.off('click')
          });
      }
 
@@ -131,14 +132,18 @@ toggle_layer = function(id){
     var layer = layer_rects[id]
     if(layer.toggle=="show"){
         layer.toggle="hide"
-        layer.map_layer = L.tileLayer(layer["tms"], { pane: 'right' }).addTo(map)
+        layer.map_layer = L.tileLayer(layer["tms"], { pane: 'right',interactive:true }).addTo(map)
 
-        // we need to make sure a layer exist first befre side to side control can function
+        // we need to make sure a layer exist first before side to side control can function
         if(!side_by_side_control){
             side_by_side_control = L.control.sideBySide(layer.map_layer, []).addTo(map);
         }
      }else{
         map.removeLayer(layer.map_layer)
+        layer.on('click', function () {
+            toggle_layer(this.id)
+            this.off('click')
+         });
         layer.toggle="show"
      }
      $("#layer_but_"+id).html(layer.toggle)
