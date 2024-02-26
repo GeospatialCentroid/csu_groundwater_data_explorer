@@ -63,7 +63,10 @@ function init(csv_txt){
      click_marker = new L.marker(e.latlng).addTo(map);
      var lat = e.latlng["lat"].toFixed(7);
      var lng = e.latlng["lng"].toFixed(7);
-     var popup = L.popup().setContent(lat+","+lng);
+     var html="<table id='lat_lng_table'><tr><td>"+lat+"</td><td>"+lng+"</td></tr></table>"
+     html+="<a href='#' onclick='copyElementToClipboard(\"lat_lng_table\");'>copy</a>"
+
+     var popup = L.popup().setContent(html);
 
         click_marker.bindPopup(popup).openPopup();
 
@@ -142,3 +145,11 @@ toggle_layer = function(id){
 
 }
 
+function copyElementToClipboard(element) {
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.selectNode(typeof element === 'string' ? document.getElementById(element) : element);
+  window.getSelection().addRange(range);
+  document.execCommand('copy');
+  window.getSelection().removeAllRanges();
+}
