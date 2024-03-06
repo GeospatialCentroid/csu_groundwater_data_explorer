@@ -1,8 +1,8 @@
-L.Control.LayerList = L.Control.extend({
+L.Control.LocationSearch = L.Control.extend({
     onAdd: function(map) {
         var div = L.DomUtil.create('div');
 
-        div.id = 'layer_list';
+        div.id = 'location_search';
         L.DomEvent.disableClickPropagation(div)
         return div;
     },
@@ -12,7 +12,7 @@ L.Control.LayerList = L.Control.extend({
     }
 });
 
-L.control.layer_list = function(opts) {
-    return new L.Control.LayerList(opts);
+L.control.location_search = function(opts) {
+    return new L.Control.LocationSearch(opts);
 }
 

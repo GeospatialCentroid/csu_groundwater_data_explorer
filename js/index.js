@@ -4,11 +4,28 @@ var annotation_col="Annotation"
 var name_col="Map Name"
 var year_col="Year"
 //
-var map
+var map_manager
 var map_layer
 var click_marker;
 var side_by_side_control
 var layer_rects=[]
+
+var params={}
+var last_params={}
+var usp={};// the url params object to be populated
+var browser_control=false; //flag for auto selecting to prevent repeat cals
+
+
+function setup_params(){
+     usp = new URLSearchParams(window.location.search.substring(1).replaceAll("~", "'").replaceAll("+", " "))
+
+    if (window.location.search.substring(1)!="" && $.isEmptyObject(params)){
+       if (usp.get('e')!=null){
+            params['e'] =  rison.decode(usp.get('e'))
+        }
+
+    }
+}
 
 window.onload = function() {
 
@@ -26,18 +43,18 @@ $(document).ready(function() {
 });
 
 function init(csv_txt){
+     setup_params()
 
 
-    map = L.map('map').setView([40.111,-104.1378635], 7)
-    L.control.scale().addTo(map);
-    map.createPane('left');
-   var right_pane= map.createPane('right');
+    map_manager = new Map_Manager(
+     {params:params['e'] ,
+        lat:40.111,
+        lng: -104.1378635,
+        z:7
+        })
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      pane: 'left',
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map)
+     map_manager.init()
+
 
    // Load the spreadsheet and
    var data = $.csv.toObjects(csv_txt);
@@ -45,24 +62,25 @@ function init(csv_txt){
 
      load_annotation(data[i][annotation_col],{'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
    }
+}
+
+function save_params(){
+    var p = "?"
+    +"e="+rison.encode(map_manager.params)
+    if(JSON.stringify(p) != JSON.stringify(last_params) && !browser_control){
+       window.history.pushState(p, null, window.location.pathname+p.replaceAll(" ", "+").replaceAll("'", "~"))
+        last_params = p
+    }
+}
 
 
-
-    //
-    const search = new GeoSearch.GeoSearchControl({
-      provider: new GeoSearch.OpenStreetMapProvider(),
-    });
-
-   map.addControl(search);
-
-   // get lat lng on click
-   map.on('click', function(e) {
-     if(click_marker){
-        map.removeLayer(click_marker);
+create_marker=function(lat_lng){
+    if(click_marker){
+        map_manager.map.removeLayer(click_marker);
      }
-     click_marker = new L.marker(e.latlng).addTo(map);
-     var lat = e.latlng["lat"].toFixed(7);
-     var lng = e.latlng["lng"].toFixed(7);
+     click_marker = new L.marker(lat_lng).addTo(map_manager.map);
+     var lat = lat_lng["lat"].toFixed(7);
+     var lng = lat_lng["lng"].toFixed(7);
      var html="<table id='lat_lng_table'><tr><td>"+lat+"</td><td>"+lng+"</td></tr></table>"
      html+="<a href='#' onclick='copyElementToClipboard(\"lat_lng_table\");'>copy</a>"
 
@@ -70,15 +88,6 @@ function init(csv_txt){
 
         click_marker.bindPopup(popup).openPopup();
 
-
-    });
-    //
-
-    L.control.layer_list({ position: 'bottomleft' }).addTo(map);
-
-    map.on("moveend", function () {
-      update_layer_list();
-    });
 }
 
 load_annotation= function(url,extra){
@@ -105,7 +114,7 @@ parse_annotation= function(json,extra){
          rect.title=extra["title"]
          rect.tms=extra["tms"]
          rect.toggle="show"
-         rect.addTo(map);
+         rect.addTo(map_manager.map);
          layer_rects.push(rect)
          rect.id=layer_rects.length-1
          rect.on('click', function () {
@@ -118,7 +127,7 @@ parse_annotation= function(json,extra){
 
 update_layer_list=function(){
     var html=""
-    var map_bounds=map.getBounds()
+    var map_bounds=map_manager.map.getBounds()
     for(var i =0;i<layer_rects.length;i++){
         if(map_bounds.intersects(layer_rects[i].getBounds())){
             html+=layer_rects[i].title+" <a id='layer_but_"+i+"' href='#' onclick='toggle_layer("+i+");'>"+layer_rects[i].toggle+"</a><br/>"
@@ -132,14 +141,14 @@ toggle_layer = function(id){
     var layer = layer_rects[id]
     if(layer.toggle=="show"){
         layer.toggle="hide"
-        layer.map_layer = L.tileLayer(layer["tms"], { pane: 'right',interactive:true }).addTo(map)
+        layer.map_layer = L.tileLayer(layer["tms"], { pane: 'right',interactive:true }).addTo(map_manager.map)
 
         // we need to make sure a layer exist first before side to side control can function
         if(!side_by_side_control){
-            side_by_side_control = L.control.sideBySide(layer.map_layer, []).addTo(map);
+            side_by_side_control = L.control.sideBySide(layer.map_layer, []).addTo(map_manager.map);
         }
      }else{
-        map.removeLayer(layer.map_layer)
+        map_manager.map.removeLayer(layer.map_layer)
         layer.on('click', function () {
             toggle_layer(this.id)
             this.off('click')
