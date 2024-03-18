@@ -177,6 +177,7 @@ function create_geojson(_data){
             "title":data[i]["Title"],
             "info_page":data[i]["Reference URL"],
             "thumb_url":"https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/"+data[i]["CONTENTdm number"]+"/thumbnail",
+            "well":data[i]["Well #"]
            /* "creato":data[i]["Creator"],
             "date":data[i]["Date"],*/
               }
@@ -192,7 +193,8 @@ function show_geojson(_data){
       console.log(_data.features.length)
         var geojson_markers = L.geoJson(_data, {
           onEachFeature: function (feature, layer) {
-              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="'+feature.properties.info_page+'" target="_new" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>');
+              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="'+feature.properties.info_page+'" target="_new" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
+              +'<br/>Well #: '+feature.properties.well);
                 //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
           }
         });
