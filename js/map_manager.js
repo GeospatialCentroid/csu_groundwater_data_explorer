@@ -84,5 +84,8 @@ class Map_Manager {
          this.params[type]= value
 
     }
+    //
+
+     
 
  }

@@ -15,6 +15,7 @@ var last_params={}
 var usp={};// the url params object to be populated
 var browser_control=false; //flag for auto selecting to prevent repeat cals
 
+var geo_locations="https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv"
 
 function setup_params(){
      usp = new URLSearchParams(window.location.search.substring(1).replaceAll("~", "'").replaceAll("+", " "))
@@ -31,20 +32,24 @@ window.onload = function() {
 
 };
 $(document).ready(function() {
+    load_do(csv,init)
 
-    $.ajax({
-        type: "GET",
-        url: csv,
-        dataType: "text",
-        success: function(csv_txt) {
-         init(csv_txt);
-         }
-     });
 });
 
-function init(csv_txt){
-     setup_params()
+function load_do(_file,_do){
+    $.ajax({
+        type: "GET",
+        url: _file,
+        dataType: "text",
+        success: function(csv_txt) {
+         _do(csv_txt);
+         }
+     });
+}
 
+function init(_csv_txt){
+
+    setup_params()
 
     map_manager = new Map_Manager(
      {params:params['e'] ,
@@ -56,12 +61,16 @@ function init(csv_txt){
      map_manager.init()
 
 
+
    // Load the spreadsheet and
-   var data = $.csv.toObjects(csv_txt);
+   var data = $.csv.toObjects(_csv_txt);
    for(var i=0;i<data.length;i++){
 
      load_annotation(data[i][annotation_col],{'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
    }
+   // load the points
+   console.log(geo_locations)
+   load_do(geo_locations,create_geojson)
 }
 
 function save_params(){
@@ -158,6 +167,39 @@ toggle_layer = function(id){
      $("#layer_but_"+id).html(layer.toggle)
 
 }
+function create_geojson(_data){
+       var data = $.csv.toObjects(_data);
+     var output_json={ "type": 'FeatureCollection', "features": []}
+   for(var i=0;i<data.length;i++){
+        if(data[i]["Well #"]!=""){
+
+            obj_props={
+            "title":data[i]["Title"],
+            "info_page":data[i]["Reference URL"],
+            "thumb_url":"https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/"+data[i]["CONTENTdm number"]+"/thumbnail",
+           /* "creato":data[i]["Creator"],
+            "date":data[i]["Date"],*/
+              }
+            output_json["features"].push({ "type": 'Feature', "properties": obj_props,
+                           "geometry":{"type": 'Point',"coordinates": [Number(data[i]["Longitude"]),Number(data[i]["Latitude"])]}})
+        }
+   }
+    show_geojson(output_json)
+}
+function show_geojson(_data){
+      var geojson_markers;
+      var clusteredPoints = L.markerClusterGroup();
+      console.log(_data.features.length)
+        var geojson_markers = L.geoJson(_data, {
+          onEachFeature: function (feature, layer) {
+              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="'+feature.properties.info_page+'" target="_new" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>');
+                //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
+          }
+        });
+        clusteredPoints.addLayer(geojson_markers);
+        map_manager.map.addLayer(clusteredPoints);
+
+    }
 
 function copyElementToClipboard(element) {
   window.getSelection().removeAllRanges();
