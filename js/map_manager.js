@@ -17,7 +17,7 @@ class Map_Manager {
     }else{
         this.params={}
     }
-     this.map = L.map('map').setView([this.lat, this.lng], this.z);
+     this.map = L.map('map',{doubleClickZoom: false}).setView([this.lat, this.lng], this.z);
   }
   init(){
      L.control.scale().addTo( this.map);
@@ -39,7 +39,7 @@ class Map_Manager {
     this.map.addControl(search);
 
    // get lat lng on click
-    this.map.on('click', function(e) {
+    this.map.on('dblclick', function(e) {
      create_marker(e.latlng)
 
 
@@ -50,7 +50,7 @@ class Map_Manager {
 
      L.control.location_search({ position: 'topleft' }).addTo( this.map);
      var search_html=""
-     search_html+='<input type="text" id="search_text" name="search_text">'
+     search_html+='<input type="text" id="search_text" name="search_text" placeholder="lat,lng">'
      search_html+='<button type="submit" id="search_location">search</button>'
      $("#location_search").append(search_html)
 
@@ -86,6 +86,6 @@ class Map_Manager {
     }
     //
 
-     
+
 
  }
