@@ -60,13 +60,11 @@ function init(_csv_txt){
 
      map_manager.init()
 
-
-
    // Load the spreadsheet and
    var data = $.csv.toObjects(_csv_txt);
    for(var i=0;i<data.length;i++){
 
-     load_annotation(data[i][annotation_col],{'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
+     load_annotation(data[i][annotation_col],{'annotation_url':data[i][annotation_col],'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
    }
    // load the points
    console.log(geo_locations)
@@ -122,6 +120,7 @@ parse_annotation= function(json,extra){
          var rect = L.rectangle(bounds, {pane: 'left',color: 'blue'})
          rect.title=extra["title"]
          rect.tms=extra["tms"]
+         rect['annotation_url']=extra['annotation_url']
          rect.toggle="show"
          rect.addTo(map_manager.map);
          layer_rects.push(rect)
@@ -150,8 +149,8 @@ toggle_layer = function(id){
     var layer = layer_rects[id]
     if(layer.toggle=="show"){
         layer.toggle="hide"
-        layer.map_layer = L.tileLayer(layer["tms"], { pane: 'right',interactive:true }).addTo(map_manager.map)
-
+        layer.map_layer =new Allmaps.WarpedMapLayer(layer['annotation_url'],{pane: 'right'})
+        map_manager.map.addLayer(layer.map_layer)
         // we need to make sure a layer exist first before side to side control can function
         if(!side_by_side_control){
             side_by_side_control = L.control.sideBySide(layer.map_layer, []).addTo(map_manager.map);
