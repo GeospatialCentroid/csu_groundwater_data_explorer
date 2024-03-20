@@ -201,6 +201,11 @@ function show_geojson(_data){
         map_manager.map.addLayer(clusteredPoints);
 
     }
+function parse_township_section_geojson(data){
+    var feature = L.geoJson(JSON.parse(data))//.addTo(map_manager.map);
+    map_manager.map.fitBounds(feature.getBounds());
+    create_marker(feature.getBounds().getCenter())
+}
 
 function copyElementToClipboard(element) {
   window.getSelection().removeAllRanges();
