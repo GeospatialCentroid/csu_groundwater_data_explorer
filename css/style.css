@@ -21,3 +21,16 @@
   margin-right: auto;
   width: 50%;
 }
+
+.marker {
+   width: 16px;
+  height: 16px;
+  display: block;
+  left: -8px;
+  top: -8px;
+  position: relative;
+  border-radius: 16px 16px 0;
+  transform: rotate(45deg);
+  border: 2px solid rgba(255, 255, 255, 1);
+  background-color:rgba(0, 0, 255, 0.5);
+  }

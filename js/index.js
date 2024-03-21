@@ -185,11 +185,25 @@ function show_geojson(_data){
               layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="'+feature.properties.info_page+'" target="_new" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
               +'<br/>Well #: '+feature.properties.well);
                 //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
-          }
+          },
+          pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {icon: get_marker_icon()});
+            }
         });
         clusteredPoints.addLayer(geojson_markers);
         map_manager.map.addLayer(clusteredPoints);
 
+    }
+
+function get_marker_icon(){
+        // define a default marker
+        return L.divIcon({
+          className: "marker_div",
+          iconAnchor: [0, 8],
+          labelAnchor: [-6, 0],
+          popupAnchor: [0, -36],
+          html: '<span class="marker" />'
+         })
     }
 function parse_township_section_geojson(data){
     var feature = L.geoJson(JSON.parse(data))//.addTo(map_manager.map);
