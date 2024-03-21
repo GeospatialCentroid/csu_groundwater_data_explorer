@@ -64,7 +64,7 @@ function init(_csv_txt){
    var data = $.csv.toObjects(_csv_txt);
    for(var i=0;i<data.length;i++){
 
-     load_annotation(data[i][annotation_col],{'annotation_url':data[i][annotation_col],'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
+     load_annotation_geojson(data[i][annotation_col]+".geojson",{'annotation_url':data[i][annotation_col],'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
    }
    // load the points
    console.log(geo_locations)
@@ -97,7 +97,7 @@ create_marker=function(lat_lng){
 
 }
 
-load_annotation= function(url,extra){
+load_annotation_geojson= function(url,extra){
     $.ajax({
         type: "GET",
         url: url,
@@ -109,15 +109,7 @@ load_annotation= function(url,extra){
      });
 }
 parse_annotation= function(json,extra){
-     for (var i=0;i<json.items.length;i++){
-        var latlngs = [];
-
-         for (var p=0;p<json.items[i].body.features.length;p++){
-             var coors=json.items[i].body.features[p].geometry.coordinates
-             latlngs.push([coors[1],coors[0]])
-         }
-         var bounds = L.polygon(latlngs).getBounds()
-         var rect = L.rectangle(bounds, {pane: 'left',color: 'blue'})
+         var rect =   L.geoJson(json, {pane: 'left',color: 'blue'})
          rect.title=extra["title"]
          rect.tms=extra["tms"]
          rect['annotation_url']=extra['annotation_url']
@@ -129,8 +121,6 @@ parse_annotation= function(json,extra){
             toggle_layer(this.id)
             this.off('click')
          });
-     }
-
 }
 
 update_layer_list=function(){
