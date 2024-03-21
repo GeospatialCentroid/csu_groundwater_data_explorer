@@ -49,7 +49,7 @@ class Map_Manager {
 
      L.control.location_search({ position: 'topleft' }).addTo( this.map);
      var search_html=""
-     search_html+='<input type="text" id="search_text" name="search_text" placeholder="lat,lng or Well #" value="2-59-8">'//
+     search_html+='<input type="text" id="search_text" name="search_text" placeholder="lat,lng or Well #" >'// value="2-59-8"
      search_html+='<button type="submit" id="search_location">search</button>'
      $("#location_search").append(search_html)
 
