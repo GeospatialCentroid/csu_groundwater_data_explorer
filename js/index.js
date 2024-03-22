@@ -209,6 +209,9 @@ function parse_township_section_geojson(data){
     var feature = L.geoJson(JSON.parse(data))//.addTo(map_manager.map);
     map_manager.map.fitBounds(feature.getBounds());
     create_marker(feature.getBounds().getCenter())
+    //show success
+    $("#bearing").removeClass("option_error")
+    $("#bearing").addClass("option_valid")
 }
 
 function copyElementToClipboard(element) {

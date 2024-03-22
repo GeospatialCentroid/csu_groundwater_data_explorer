@@ -50,6 +50,7 @@ class Map_Manager {
      L.control.location_search({ position: 'topleft' }).addTo( this.map);
      var search_html=""
      search_html+='<input type="text" id="search_text" name="search_text" placeholder="lat,lng or Well #" >'// value="2-59-8"
+     search_html+='<select name="bearing" id="bearing"><option value="NW">NW</option><option value="SW">SW</option><option value="NE">NE</option><option value="SE">SE</option></select>'
      search_html+='<button type="submit" id="search_location">search</button>'
      $("#location_search").append(search_html)
 
@@ -71,8 +72,11 @@ class Map_Manager {
                     well_nums[i]="0"+well_nums[i]
                 }
             }
-            var township_section_name=well_nums[0]+"N+"+well_nums[1]+"W+"+well_nums[2]//"12S+73W+08" - 012,120,102,021,210,201
+            var bearing = $("#bearing").val().split("")
+            var township_section_name=well_nums[0]+bearing[0]+"+"+well_nums[1]+bearing[1]+"+"+well_nums[2]//"12S+73W+08" - 012,120,102,021,210,201
             var url="https://services5.arcgis.com/rqsYvPKZmvSrSWbw/arcgis/rest/services/PLSS_2020_VIEW/FeatureServer/2/query?where=Search_Name%3D%27"+township_section_name+"%27&fullText=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&returnEnvelope=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token="
+            $("#bearing").removeClass("option_valid")
+            $("#bearing").addClass("option_error")
             load_do(url,parse_township_section_geojson)
         }
      })

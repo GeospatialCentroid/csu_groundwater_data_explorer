@@ -34,3 +34,12 @@
   border: 2px solid rgba(255, 255, 255, 1);
   background-color:rgba(0, 0, 255, 0.5);
   }
+
+.option_valid {
+    /* Whatever color  you want */
+    background-color: hsl(149, 50%, 62%);
+}
+.option_error {
+    /* Whatever color  you want */
+    background-color: hsl(0,90%,81%) ;
+}
