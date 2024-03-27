@@ -8,8 +8,12 @@
     top: 0;
     width: 100%;
     height: 100%;
+    float:right;
 }
-
+.map{
+  float:left;
+  width: 50%;
+}
 #layer_list{
     background-color:#ffffff;
     max-height:300px;
@@ -42,4 +46,13 @@
 .option_error {
     /* Whatever color  you want */
     background-color: hsl(0,90%,81%) ;
+}
+#image_map{
+        border-right: 1px solid grey;
+        display:none;
+        height: 100%;
+}
+#leaflet_spinner{
+    color:black;
+    display:none;
 }

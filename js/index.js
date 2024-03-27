@@ -3,6 +3,8 @@ var tms_col="TMS"
 var annotation_col="Annotation"
 var name_col="Map Name"
 var year_col="Year"
+var base_url="https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/"
+var iiif_base_url="https://archives.mountainscholar.org/iiif/2/p17393coll166:"
 //
 var map_manager
 var map_layer
@@ -59,6 +61,8 @@ function init(_csv_txt){
         })
 
      map_manager.init()
+     // allow for iiif viewing
+     map_manager.init_image()
 
    // Load the spreadsheet and
    var data = $.csv.toObjects(_csv_txt);
@@ -165,8 +169,10 @@ function create_geojson(_data){
             obj_props={
             "title":data[i]["Title"],
             "info_page":data[i]["Reference URL"],
-            "thumb_url":"https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/"+data[i]["CONTENTdm number"]+"/thumbnail",
-            "well":data[i]["Well #"]
+            "thumb_url":base_url+data[i]["CONTENTdm number"]+"/thumbnail",
+            "well":data[i]["Well #"],
+            "iiif":iiif_base_url+data[i]["CONTENTdm number"]+"/info.json",
+             "attribution":data[i]["Title"],
            /* "creato":data[i]["Creator"],
             "date":data[i]["Date"],*/
               }
@@ -182,7 +188,8 @@ function show_geojson(_data){
       console.log(_data.features.length)
         var geojson_markers = L.geoJson(_data, {
           onEachFeature: function (feature, layer) {
-              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="'+feature.properties.info_page+'" target="_new" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
+                //+feature.properties.info_page+
+              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="javascript:void(0);" onclick="map_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
               +'<br/>Well #: '+feature.properties.well);
                 //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
           },
