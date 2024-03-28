@@ -18,9 +18,6 @@ class Map_Manager {
         this.params={}
     }
      this.map = L.map('map',{doubleClickZoom: false}).setView([this.lat, this.lng], this.z);
-
-     // track image_layer
-     this.image_layer;
   }
   init(){
      L.control.scale().addTo( this.map);
@@ -107,47 +104,5 @@ class Map_Manager {
          this.params[type]= value
 
     }
-    // allow iiif images to show in same window
-    init_image(){
-            this.image_map = L.map('image_map', {
-             center: [0, 0],
-              zoom:  1,
-              crs: L.CRS.Simple,
 
-        })
-        this.image_map._resetView(this.image_map.getCenter(), this.image_map.getZoom());
-        }
-     show_image(img,attribution){
-        $("#image_map").width("75%")
-        $("#image_map").show()
-         $("#map").width("25%")
-         $("#map").css({'left':"75%"})
-         //$("#leaflet_spinner").show();
-        console.log(this.image_layer)
-         if(this.image_layer){
-            map_manager.image_map.removeLayer(this.image_layer);
-        }
-
-        this._img =L["tileLayer"]["iiif"](img)
-        this._img.addTo(this.image_map);
-        this.image_layer = this._img; // store for future reference
-
-        this._img.on('load', function (e) {
-            console.log("image Load complete")
-            $("#leaflet_spinner").hide();
-        });
-        this.map.invalidateSize(true)
-        this.image_map.invalidateSize(true)
-
-        this.image_map.attributionControl._attributions = {};
-        this.image_map.attributionControl.addAttribution(attribution);
-
-     }
-    hide_image(){
-
-        $("#image_map").hide()
-         $("#map").width("100%")
-         $("#map").css({'left':"0px"})
-          this.map.invalidateSize(true)
-    }
  }

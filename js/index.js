@@ -12,6 +12,8 @@ var click_marker;
 var side_by_side_control
 var layer_rects=[]
 
+var image_manager
+
 var params={}
 var last_params={}
 var usp={};// the url params object to be populated
@@ -25,6 +27,10 @@ function setup_params(){
     if (window.location.search.substring(1)!="" && $.isEmptyObject(params)){
        if (usp.get('e')!=null){
             params['e'] =  rison.decode(usp.get('e'))
+        }
+        //support passing contentdm id
+        if (usp.get('id')!=null){
+            params['id'] =  usp.get('id')
         }
 
     }
@@ -60,9 +66,15 @@ function init(_csv_txt){
         z:7
         })
 
-     map_manager.init()
+    map_manager.init()
+
+    image_manager = new Image_Manager({params:{}})
+
      // allow for iiif viewing
-     map_manager.init_image()
+     image_manager.init()
+     if(params['id']){
+       image_manager.show_image(iiif_base_url+params['id']+"/info.json","")
+     }
 
    // Load the spreadsheet and
    var data = $.csv.toObjects(_csv_txt);
@@ -188,8 +200,8 @@ function show_geojson(_data){
       console.log(_data.features.length)
         var geojson_markers = L.geoJson(_data, {
           onEachFeature: function (feature, layer) {
-                //+feature.properties.info_page+
-              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="javascript:void(0);" onclick="map_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
+
+              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
               +'<br/>Well #: '+feature.properties.well);
                 //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
           },
