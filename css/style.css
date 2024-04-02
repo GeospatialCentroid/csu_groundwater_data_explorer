@@ -56,3 +56,22 @@
     color:black;
     display:none;
 }
+
+.custom-modal{
+    position: fixed;
+     top:auto;
+    right:auto;
+    left:5px;
+
+    /*transform: translate(-50%, -50%);*/
+    width: fit-content;
+    height: fit-content;
+    padding: 0 !important;
+    bottom:0;
+}
+//inner css class style//
+.modal-dialog{marging:0}
+
+.short_input{
+    width:100px;
+}

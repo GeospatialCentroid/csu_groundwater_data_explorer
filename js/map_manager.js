@@ -1,7 +1,7 @@
 class Map_Manager {
   constructor(properties) {
 
-  for (var p in properties){
+    for (var p in properties){
         this[p]=properties[p]
     }
     if (this.params){
@@ -20,6 +20,7 @@ class Map_Manager {
      this.map = L.map('map',{doubleClickZoom: false}).setView([this.lat, this.lng], this.z);
   }
   init(){
+    var $this=this
      L.control.scale().addTo( this.map);
      this.map.createPane('left');
     var right_pane=  this.map.createPane('right');
@@ -39,9 +40,7 @@ class Map_Manager {
 
    // get lat lng on click
     this.map.on('dblclick', function(e) {
-     create_marker(e.latlng)
-
-
+     $this.create_marker(e.latlng)
     });
     //
 
@@ -59,7 +58,7 @@ class Map_Manager {
         var lat_lng=$("#search_text").val().split(",").map( Number )
 
         lat_lng=new L.latLng(lat_lng[0],lat_lng[1])
-        create_marker(lat_lng)
+         $this.create_marker(lat_lng)
         }else{
             // we're working with and a well #
             // start by parsing the sections
@@ -77,7 +76,7 @@ class Map_Manager {
             var url="https://services5.arcgis.com/rqsYvPKZmvSrSWbw/arcgis/rest/services/PLSS_2020_VIEW/FeatureServer/2/query?where=Search_Name%3D%27"+township_section_name+"%27&fullText=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&returnEnvelope=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token="
             $("#bearing").removeClass("option_valid")
             $("#bearing").addClass("option_error")
-            load_do(url,parse_township_section_geojson)
+            load_do(url, $this.parse_township_section_geojson)
         }
      })
 
@@ -102,6 +101,97 @@ class Map_Manager {
         // allow or saving details outside of the filter list but
         //added to the json_str when the map changes
          this.params[type]= value
+
+    }
+    // markers
+  create_geojson(){
+   var data=this.data;
+   var output_json={ "type": 'FeatureCollection', "features": []}
+   for(var i=0;i<data.length;i++){
+        if(data[i]["Well #"]!=""){
+
+           var obj_props={
+            "title":data[i]["Title"],
+            "info_page":data[i]["Reference URL"],
+            "id":data[i]["CONTENTdm number"],
+            "thumb_url":base_url+data[i]["CONTENTdm number"]+"/thumbnail",
+            "well":data[i]["Well #"],
+            "iiif":iiif_base_url+data[i]["CONTENTdm number"]+"/info.json",
+             "attribution":data[i]["Title"],
+           /* "creato":data[i]["Creator"],
+            "date":data[i]["Date"],*/
+              }
+             if(data[i].data){
+                obj_props["data"]= data[i].data
+             }
+
+            output_json["features"].push({ "type": 'Feature', "properties": obj_props,
+                           "geometry":{"type": 'Point',"coordinates": [Number(data[i]["Longitude"]),Number(data[i]["Latitude"])]}})
+        }
+   }
+    map_manager.show_geojson(output_json)
+}
+ show_geojson(_data){
+      var $this=this
+      var geojson_markers;
+      var clustered_points = L.markerClusterGroup();
+      console.log("Geolocated data sheets:",_data.features.length)
+        var geojson_markers = L.geoJson(_data, {
+          onEachFeature: function (feature, layer) {
+              var transcription_link=''
+              if(transcription_mode){
+                transcription_link='<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
+              }
+              layer.bindPopup('<h4>'+feature.properties.title+'</h4><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
+              +'<br/>Well #: '+feature.properties.well+transcription_link);
+                //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
+          },
+          pointToLayer: function (feature, latlng) {
+                var extra=''
+                if(feature.properties.data){
+                extra='style="border-color: black;"'
+                }
+                return L.marker(latlng, {icon: $this.get_marker_icon(extra)});
+            }
+        });
+        clustered_points.addLayer(geojson_markers);
+        this.map.addLayer(clustered_points);
+
+    }
+
+    get_marker_icon(extra){
+        // define a default marker
+        return L.divIcon({
+          className: "marker_div",
+          iconAnchor: [0, 8],
+          labelAnchor: [-6, 0],
+          popupAnchor: [0, -36],
+          html: '<span class="marker" '+extra+'/>'
+        })
+    }
+    // township search
+
+    parse_township_section_geojson(data){
+        var feature = L.geoJson(JSON.parse(data))//.addTo(map_manager.map);
+        map_manager.map.fitBounds(feature.getBounds());
+        map_manager.create_marker(feature.getBounds().getCenter())
+        //show success
+        $("#bearing").removeClass("option_error")
+        $("#bearing").addClass("option_valid")
+    }
+    create_marker(lat_lng){
+        if(click_marker){
+            this.map.removeLayer(click_marker);
+        }
+        click_marker = new L.marker(lat_lng).addTo(this.map);
+        var lat = lat_lng["lat"].toFixed(7);
+        var lng = lat_lng["lng"].toFixed(7);
+        var html="<table id='lat_lng_table'><tr><td>"+lat+"</td><td>"+lng+"</td></tr></table>"
+        html+="<a href='#' onclick='copyElementToClipboard(\"lat_lng_table\");'>copy</a>"
+
+        var popup = L.popup().setContent(html);
+
+        click_marker.bindPopup(popup).openPopup();
 
     }
 

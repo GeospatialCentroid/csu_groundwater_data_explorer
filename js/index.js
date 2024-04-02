@@ -6,6 +6,10 @@ var year_col="Year"
 var base_url="https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/"
 var iiif_base_url="https://archives.mountainscholar.org/iiif/2/p17393coll166:"
 //
+field_data_url="https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv"
+field_data_post_url="https://script.google.com/macros/s/AKfycbz_A2MSHJ5Zd2szCC5oWkkFcTKZ1_VjnuEl_ywpwnrkvKk-6ZZU0y9hZRAGGSoaM1dhrQ/exec"
+
+//
 var map_manager
 var map_layer
 var click_marker;
@@ -14,12 +18,16 @@ var layer_rects=[]
 
 var image_manager
 
+var transcription
+var transcription_mode;
+
 var params={}
 var last_params={}
 var usp={};// the url params object to be populated
 var browser_control=false; //flag for auto selecting to prevent repeat cals
 
 var geo_locations="https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv"
+
 
 function setup_params(){
      usp = new URLSearchParams(window.location.search.substring(1).replaceAll("~", "'").replaceAll("+", " "))
@@ -32,6 +40,10 @@ function setup_params(){
         if (usp.get('id')!=null){
             params['id'] =  usp.get('id')
         }
+        if (usp.get('t')!=null){
+           console.log("transcription mode")
+           transcription_mode=true;
+        }
 
     }
 }
@@ -43,6 +55,7 @@ $(document).ready(function() {
     load_do(csv,init)
 
 });
+
 
 function load_do(_file,_do){
     $.ajax({
@@ -83,8 +96,40 @@ function init(_csv_txt){
      load_annotation_geojson(data[i][annotation_col]+".geojson",{'annotation_url':data[i][annotation_col],'tms':data[i][tms_col],"title":data[i][name_col]+" "+data[i][year_col]})
    }
    // load the points
-   console.log(geo_locations)
-   load_do(geo_locations,create_geojson)
+   load_do(geo_locations,save_marker_data)
+
+    if(transcription_mode){
+        transcription = new Transcription({
+        field_data_post_url:field_data_post_url,
+        })
+        load_do(field_data_url,save_transcription_data)
+    }
+
+}
+function save_marker_data(_data){
+    map_manager.data = $.csv.toObjects(_data);
+    check_all_loaded();
+}
+function save_transcription_data(_data){
+    transcription.data = $.csv.toObjects(_data);
+    check_all_loaded();
+}
+
+function check_all_loaded(){
+
+    //if we are transcribing we need to make sure that both the geolocated sheets
+    //and the transcriptions are loaded
+  if(transcription_mode){
+    if(transcription.data && map_manager.data){
+     transcription.group_transcription()
+     transcription.connect_transcription()
+     map_manager.create_geojson()
+    }
+
+  }else{
+     map_manager.create_geojson()
+
+  }
 }
 
 function save_params(){
@@ -96,22 +141,6 @@ function save_params(){
     }
 }
 
-
-create_marker=function(lat_lng){
-    if(click_marker){
-        map_manager.map.removeLayer(click_marker);
-     }
-     click_marker = new L.marker(lat_lng).addTo(map_manager.map);
-     var lat = lat_lng["lat"].toFixed(7);
-     var lng = lat_lng["lng"].toFixed(7);
-     var html="<table id='lat_lng_table'><tr><td>"+lat+"</td><td>"+lng+"</td></tr></table>"
-     html+="<a href='#' onclick='copyElementToClipboard(\"lat_lng_table\");'>copy</a>"
-
-     var popup = L.popup().setContent(html);
-
-        click_marker.bindPopup(popup).openPopup();
-
-}
 
 load_annotation_geojson= function(url,extra){
     $.ajax({
@@ -172,66 +201,15 @@ toggle_layer = function(id){
      $("#layer_but_"+id).html(layer.toggle)
 
 }
-function create_geojson(_data){
-       var data = $.csv.toObjects(_data);
-     var output_json={ "type": 'FeatureCollection', "features": []}
-   for(var i=0;i<data.length;i++){
-        if(data[i]["Well #"]!=""){
 
-            obj_props={
-            "title":data[i]["Title"],
-            "info_page":data[i]["Reference URL"],
-            "thumb_url":base_url+data[i]["CONTENTdm number"]+"/thumbnail",
-            "well":data[i]["Well #"],
-            "iiif":iiif_base_url+data[i]["CONTENTdm number"]+"/info.json",
-             "attribution":data[i]["Title"],
-           /* "creato":data[i]["Creator"],
-            "date":data[i]["Date"],*/
-              }
-            output_json["features"].push({ "type": 'Feature', "properties": obj_props,
-                           "geometry":{"type": 'Point',"coordinates": [Number(data[i]["Longitude"]),Number(data[i]["Latitude"])]}})
-        }
-   }
-    show_geojson(output_json)
+
+function connect_transcription(_data){
+     var data = $.csv.toObjects(_data);
+     for(var i=0;i<data.length;i++){
+            console.log(data[i])
+     }
 }
-function show_geojson(_data){
-      var geojson_markers;
-      var clusteredPoints = L.markerClusterGroup();
-      console.log(_data.features.length)
-        var geojson_markers = L.geoJson(_data, {
-          onEachFeature: function (feature, layer) {
 
-              layer.bindPopup('<h3>'+feature.properties.title+'</h3><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a>'
-              +'<br/>Well #: '+feature.properties.well);
-                //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
-          },
-          pointToLayer: function (feature, latlng) {
-                return L.marker(latlng, {icon: get_marker_icon()});
-            }
-        });
-        clusteredPoints.addLayer(geojson_markers);
-        map_manager.map.addLayer(clusteredPoints);
-
-    }
-
-function get_marker_icon(){
-        // define a default marker
-        return L.divIcon({
-          className: "marker_div",
-          iconAnchor: [0, 8],
-          labelAnchor: [-6, 0],
-          popupAnchor: [0, -36],
-          html: '<span class="marker" />'
-         })
-    }
-function parse_township_section_geojson(data){
-    var feature = L.geoJson(JSON.parse(data))//.addTo(map_manager.map);
-    map_manager.map.fitBounds(feature.getBounds());
-    create_marker(feature.getBounds().getCenter())
-    //show success
-    $("#bearing").removeClass("option_error")
-    $("#bearing").addClass("option_valid")
-}
 
 function copyElementToClipboard(element) {
   window.getSelection().removeAllRanges();

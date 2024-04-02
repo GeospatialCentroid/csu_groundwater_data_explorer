@@ -20,7 +20,7 @@ class Image_Manager {
          $("#map").width("25%")
          $("#map").css({'left':"75%"})
          //$("#leaflet_spinner").show();
-        console.log(this.image_layer)
+
          if(this.image_layer){
             image_manager.image_map.removeLayer(this.image_layer);
         }
