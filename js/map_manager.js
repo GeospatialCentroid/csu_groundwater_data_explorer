@@ -194,5 +194,35 @@ class Map_Manager {
         click_marker.bindPopup(popup).openPopup();
 
     }
+    show_layer_select(_layer_id){
+        var trigger_map_click=false
+        // triggered when there is an update
+         if (typeof(_layer_id)!="undefined"){
+            this.selected_layer_id = _layer_id
+         }
+         // if the _layer_id is not set and the this.selected_layer_id is no longer on the map trigger a new map click with the first layer
+         if (!_layer_id || !layer_manager.is_on_map(this.selected_layer_id) ){
+
+            // make sure there are still layers left
+            if(layer_manager.layers.length>0){
+                this.selected_layer_id=layer_manager.layers[0].id
+                trigger_map_click = true
+            }else{
+                this.popup_close()
+
+                return
+            }
+
+        }
+
+        var html = layer_manager.get_layer_select_html(this.selected_layer_id,"map_manager.set_selected_layer_id")
+         $("#layer_select").html(html)
+         //also return the html for direct injection
+         if (trigger_map_click &&  $("#layer_select").length){
+            this.map_click_event()
+
+         }
+         return html
+     }
 
  }
