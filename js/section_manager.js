@@ -50,6 +50,7 @@ class Section_Manager {
             dataType: type,
             slot: slot, //pass through param
             success: function(_data) {
+                console.log("LOADED",url)
                 call_back(_data,this.slot)
             }
          });
@@ -134,8 +135,6 @@ class Section_Manager {
 
          }
          //section_manager.toggle_overlay()
-         //Todo add temporarily
-        //section_manager.check_all_section_completion()
     }
     toggle_overlay(){
         if(section_manager.overlay_current<=section_manager.overlay_count){
@@ -187,7 +186,7 @@ class Section_Manager {
         for (var i=0; i<$this.json_data.length;i++){
              if(!$this.json_data[i]?.all_data){
                 console.log("check to make sure all has really loaded")
-               // all_sections_data_loaded =false
+                all_sections_data_loaded =false
              }
         }
         if (all_sections_data_loaded){
@@ -207,23 +206,35 @@ class Section_Manager {
     }
 
     join_data(section){
-     console.log("JOIN DATA!!!!!!")
         // lets start by storing the first loaded data file in the top spot
         section.all_data= $.csv.toObjects(section.data[0].data)//todo if the first loaded data is geojson, we'll want to convert it to a flat json structure for searching
         //takes one or more data files and joins them on a key
         //starting with the second dataset, look for the left_join_col,right_join_col
         //When matched, map all the parameters to the first dataset
-
-        console.log(section.data)
         if(section.data.length>0){
-         console.log("We have this many data",section.data.length)
+        console.log(section.data.length)
             for (var j=1;j<section.data.length;j++){
                 var data_to_join=section.data[j]
                 var type=data_to_join[1]
-                console.log("we're working with a type of ",type)
+
+                console.log(type,"TYPE______")
                 if(type=="geojson"){
                     this.join_geojson(section.all_data,data_to_join.data,data_to_join[2],data_to_join[3],section["title_col"])
-                     console.log(section.filter_cols)
+
+                    console.log(section.filter_cols)
+
+                    this.update_geojson_properties(section.all_data,show_cols,separated_cols,section?.image_col,section?.color_col)
+
+                }else if(type=="csv"){
+                    console.log(transcription)
+                    transcription.group_transcription($.csv.toObjects(data_to_join.data.replaceAll('\t', '')))
+
+                    section.all_data=transcription.connect_transcription(section.all_data)
+                    section.all_data= this.convert_csv_to_geojson(section,section.all_data,section["title_col"])
+
+
+                 }
+                  console.log(section.filter_cols)
                     var show_cols=section.show_cols.split(",").map(function(item) {
                           return item.trim();
                         });
@@ -234,20 +245,50 @@ class Section_Manager {
                           return item.trim();
                         });
                     section.filter_cols=filter_cols
-                    console.log(section.filter_cols)
-
-                    this.update_geojson_properties(section.all_data,show_cols,separated_cols,section?.image_col,section?.color_col)
-                    filter_manager.create_filter_values(section,section.all_data,filter_cols,section?.year_start_col,section?.year_end_col);
-                }
-                 if(type=="csv"){
-                    console.log(section.data[j])
-
-                 }
+                     filter_manager.create_filter_values(section,section.all_data,filter_cols,section?.year_start_col,section?.year_end_col);
                 //console.log("second data",section.data[j].data,section.data[j][1])
 
             }
           }
 
+    }
+    convert_csv_to_geojson(section,_data,title_col){
+        var temp_data=_data
+        field_data_post_url = section.post_url
+         for (var i=0;i<temp_data.length;i++){
+             temp_data[i]["_id"]=i//IMPORTANT for controlling visibility
+             temp_data[i]._sort_col= temp_data[i][title_col]
+
+             var obj_props={
+                "id":Number(temp_data[i]["CONTENTdm number"]),
+               "title":temp_data[i]["Title"],
+                "info_page":temp_data[i]["Reference URL"],
+                "id":temp_data[i]["CONTENTdm number"],
+                "thumb_url":section.base_url+temp_data[i]["CONTENTdm number"]+"/thumbnail",
+                "well":temp_data[i]["Well #"],
+                "iiif":section.iiif_base_url+temp_data[i]["CONTENTdm number"]+"/info.json",
+                "attribution":temp_data[i]["Title"],
+             }
+             if(temp_data[i].data){
+                obj_props["has_data"]= true
+             }
+
+             temp_data[i]["feature"]={}
+             temp_data[i]["feature"]["features"] =[
+                {
+                  "type": "Feature",
+                  "properties": obj_props,
+                  "geometry": {
+                    "coordinates": [
+                         Number(temp_data[i].Longitude),
+                         Number(temp_data[i].Latitude),
+                    ],
+                    "type": "Point"
+                  }
+                }]
+
+         }
+        return temp_data
     }
     join_geojson(all_data,data_to_join,left_join_col,right_join_col,title_col){
 
@@ -256,7 +297,7 @@ class Section_Manager {
             all_data[i]._id=i
             //store a sort col for universal access
              all_data[i]._sort_col= all_data[i][title_col]
-
+            console.log( all_data[i][title_col],title_col,all_data[i])
             var left_join_val=all_data[i][left_join_col].toLowerCase()
             for (var j=0;j<data_to_join.features.length;j++){
                 //console.log(data_to_join.features[j].properties[right_join_col],"values")
@@ -273,7 +314,7 @@ class Section_Manager {
                         all_data[i].feature.features.push(data_to_join.features[j])
                         all_data[i].feature.features[0].geometry.type="MultiPolygon"
                         // keep the feature and child id consistent
-                        all_data[i].feature.features[0].id=all_data[i]._id;
+                        all_data[i].feature.features[0].id=all_data[i]._id;//IMPORTANT
                         //wrap the coordinates in an array to allow for more coordinates to be joined
 
                         if(all_data[i].feature.features[0].geometry.coordinates[0][0].length==2){

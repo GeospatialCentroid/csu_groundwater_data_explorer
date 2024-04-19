@@ -375,7 +375,7 @@ class Layer_Manager {
   }
 
   get_layer_obj(_resource_id){
-        //console.log(this.layers)
+      console.log(this.layers)
       for(var i =0;i<this.layers.length;i++){
             var temp_layer = this.layers[i]
 
@@ -512,10 +512,15 @@ class Layer_Manager {
            this.load_tabular_data(url,layer_obj,_resource_id);
 
       }else if (service_method._method=="csv_geojson"){
+
+
              // check if we have a layer obj already
           var layer_obj=$this.get_layer_obj(_resource_id);
+          console.log("So close to show_csv_geojson_data",layer_obj)
          if(layer_obj){
-              //notice layer_ob.layer_obj
+              console.log("We have a layer_obj!!!!")
+
+              //notice layer_obj.layer_obj
              this.show_csv_geojson_data(layer_obj.layer_obj,_resource_id,item_ids);
              return
           }else{
@@ -523,6 +528,7 @@ class Layer_Manager {
               layer_obj = L.featureGroup();
               layer_obj.item_to_layer_id=[];//store an id associating the item with the layer id
               layer_obj.layer_options=layer_options
+              console_log("about to call show_csv_geojson_data")
               this.show_csv_geojson_data(layer_obj,_resource_id,item_ids);
           }
 
@@ -679,13 +685,14 @@ class Layer_Manager {
         // style.opacity= 0
     }
 
-
+    var extra=""
+    if(feature?.features[0]?.properties?.has_data){
+        extra='style="border-color: black;"'
+    }
     feature.id= feature.features[0].id
     var geo =L.geoJSON(feature, {pane: _resource_id, style: style,
         pointToLayer: function(feature, latlng) {
-            return L.marker(latlng, {
-                icon: map_manager.get_marker_icon(resource_marker_class)
-              });
+            return L.marker(latlng, {  icon: map_manager.get_marker_icon(extra)});
         },
     })
 
@@ -707,15 +714,15 @@ class Layer_Manager {
         map_manager.click_lat_lng = e.latlng
         map_manager.click_x_y=e.containerPoint
 
-        map_manager.popup_show();
-         console_log(e)
-        try{
-              map_manager.selected_feature_id=layer_manager.get_object_id(e.layer.feature);
-              map_manager.show_popup_details([e.layer.feature])
-        }catch(error){
-            // could be an artificial click
-             console_log(e)
-        }
+        map_manager.popup_show(e.layer.feature);
+//         console_log(e)
+//        try{
+//              map_manager.selected_feature_id=layer_manager.get_object_id(e.layer.feature);
+//              map_manager.show_popup_details([e.layer.feature])
+//        }catch(error){
+//            // could be an artificial click
+//             console_log(e)
+//        }
          //map_manager.layer_clicked=false
   }
     get_object_id(_feature){
@@ -749,12 +756,12 @@ class Layer_Manager {
 
         // remove existing layers
         for (var i in $this.image_layers){
-            map_manager.image_map.removeLayer($this.image_layers[i]);
+            image_manager.image_map.removeLayer($this.image_layers[i]);
         }
 
          $(".leaflet-spinner").show();
          setTimeout(function(){
-             _layer.addTo(map_manager.image_map);
+             _layer.addTo(image_manager.image_map);
              _layer.on("load",function() {  $(".leaflet-spinner").hide(); });
             $this.image_layers.push(_layer)
          },500);
@@ -910,30 +917,32 @@ class Layer_Manager {
   // 3. selecting an individual item (with/checkbox) will show individual item
   // hiding
   // Unchecking any checkbox will take all the ids associated with it and remove them from the map
+    var section_id=_resource_id.replaceAll('section_id_', '')
+    var items_showing=section_manager.json_data[section_id].items_showing
+    if(!section_manager.json_data[section_id].clustered_points){
+        section_manager.json_data[section_id].clustered_points = L.markerClusterGroup();
+        layer_obj.addLayer( section_manager.json_data[section_id].clustered_points);
+    }
+   section_manager.json_data[section_id].geojson_markers = []
 
-    var items_showing=section_manager.json_data[_resource_id.replaceAll('section_id_', '')].items_showing
     $this.create_style_class(_resource_id)
     var data = section_manager.get_match(_resource_id)
-    //     var markers = L.markerClusterGroup();
 
      for (var i=0;i<item_ids.length;i++){
         var item_id=item_ids[i]
         var index =$.inArray( item_id, items_showing)
         if (index==-1){
+
             if(data[item_id]?.feature){
-
-
-                try{
+              try{
 
                  var geo = $this.create_geo_feature(data[item_id].feature,_resource_id,layer_obj, false, false)
-
-                 layer_obj.addLayer(geo
-                 .bindTooltip(data[item_id].feature.features[0].properties[Object.keys(data[item_id].feature.features[0].properties)[0]]));
+                    section_manager.json_data[section_id].geojson_markers.push(geo)
                   // rather than force an id - lets associate the item_id, with the internal leaflet id
                  layer_obj.item_to_layer_id[item_id]=layer_obj.getLayerId(geo)
 
                  items_showing.push(item_id)
-                 }catch(error){
+               }catch(error){
                       console.log(error,"Error trying to create",data[item_id].feature)//JSON.stringify(
                  }
              }
@@ -941,16 +950,18 @@ class Layer_Manager {
         }else{
             try{
                 // it's possible a shape Path errors-out when trying to remove, just try to remove it
-                layer_obj.removeLayer(layer_obj.item_to_layer_id[item_id]);// note: we need to use the internal id number
+                section_manager.json_data[section_id].clustered_points.removeLayer(layer_obj.item_to_layer_id[item_id]);// note: we need to use the internal id number
             }catch(error){
 
             }
 
             items_showing.splice(index,1)
+
         }
 
      }
-
+     section_manager.json_data[section_id].clustered_points.clearLayers();
+    section_manager.json_data[section_id].clustered_points.addLayers(section_manager.json_data[section_id].geojson_markers);
     //layer_obj.addLayer(markers)
     //map_manager.map_zoom_event(layer_obj.getBounds())
 //    if(items_showing.length>0){
@@ -958,6 +969,8 @@ class Layer_Manager {
 //    }
     // associate data for access during map click selection
     layer_obj.data = data
+
+
 
   }
 

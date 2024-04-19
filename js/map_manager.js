@@ -89,6 +89,9 @@ class Map_Manager {
          save_params()
     });
   }
+
+
+
     move_map_pos(_params){
         var z = Number(_params['z'])
         var c = _params['c'].split(',')
@@ -131,34 +134,41 @@ class Map_Manager {
    }
     map_manager.show_geojson(output_json)
 }
- show_geojson(_data){
-      var $this=this
-      var geojson_markers;
-      var clustered_points = L.markerClusterGroup();
-      console.log("Geolocated data sheets:",_data.features.length)
-        var geojson_markers = L.geoJson(_data, {
-          onEachFeature: function (feature, layer) {
-              var transcription_link=''
-              if(transcription_mode){
-                transcription_link='<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
-              }
-              layer.bindPopup('<h4>'+feature.properties.title+'</h4><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
-              +'<br/>Well #: '+feature.properties.well+transcription_link);
-                //<br/>Creator: '+feature.properties.creato+'<br/>Date: '+feature.properties.date+''
-          },
-          pointToLayer: function (feature, latlng) {
-                var extra=''
-                if(feature.properties.data){
-                extra='style="border-color: black;"'
-                }
-                return L.marker(latlng, {icon: $this.get_marker_icon(extra)});
-            }
-        });
-        clustered_points.addLayer(geojson_markers);
-        this.map.addLayer(clustered_points);
+ popup_show(feature){
 
+        var $this=this
+
+        var html = '<div id="popup_content">'
+        html+='<h4>'+feature.properties.title+'</h4><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
+              +'<br/>Well #: '+feature.properties.well+'<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
+              +'</div>'
+
+        this.popup= L.popup(this.popup_options)
+            .setLatLng(this.click_lat_lng)
+            .setContent(html)
+            .openOn(this.map)
+//            .on("remove", function () {
+//                 $this.show_highlight_geo_json()
+//              });
+
+     }
+      update_map_size(){
+        // make the map fill the difference
+        var window_width=$( "#map_wrapper" ).width()
+        $("#map").width(window_width-$("#image_map").width()-2)
+        this.map.invalidateSize(true)
+        image_manager.image_map.invalidateSize(true)
     }
-
+     highlight_marker(_id){
+     var markers = section_manager.json_data[0].geojson_markers
+        for(var i=0;i<markers.length;i++){
+            if(markers[i]._layers[Object.keys(markers[i]._layers)[0]].feature.properties.id==_id){
+                var extra='style="border-color: black;"'
+              markers[i]._layers[Object.keys(markers[i]._layers)[0]]._icon.innerHTML='<span class="marker" '+extra+'/>'
+               break;
+            }
+        }
+    }
     get_marker_icon(extra){
         // define a default marker
         return L.divIcon({
@@ -224,5 +234,83 @@ class Map_Manager {
          }
          return html
      }
+     map_zoom_event(_bounds){
+        var bounds
+        if (_bounds){
+            bounds=_bounds
+        }else{
+           bounds=this.highlighted_feature.getBounds()
+        }
 
+        var zoom_level = this.map.getBoundsZoom(bounds)
+        console.log("The zoom level is ",zoom_level)
+        //prevent zooming in too close
+        if (zoom_level>19){
+            this.map.flyTo(bounds.getCenter(),19);
+        }else{
+            this.map.flyToBounds(bounds);
+        }
+//         this.scroll_to_map()
+     }
+      get_selected_layer(){
+        // start with the last layer (top) if not yet set - check to make use the previous selection still exists
+        if (!this.selected_layer_id || !layer_manager.is_on_map(this.selected_layer_id) ){
+            if ( layer_manager.layers.length>0){
+                this.selected_layer_id=layer_manager.layers[layer_manager.layers.length-1].id
+            }else{
+                console.log("No layers for you!")
+                return
+            }
+
+        }
+        return layer_manager.get_layer_obj(this.selected_layer_id);
+    }
+     map_click_event(lat_lng,no_page){
+        var $this=this
+        if(lat_lng){
+            $this.click_lat_lng=lat_lng
+        }
+
+        // identify any feature under where the user clicked
+        //start by removing the existing feature
+        if (this.highlighted_feature) {
+          this.map.removeLayer(this.highlighted_feature);
+        }
+
+
+        //analytics_manager.track_event("web_map","click","layer_id",this.get_selected_layer()?.id)
+        //start by using the first loaded layer
+        var layer = this.get_selected_layer()
+        console_log("Get selected layer",layer)
+        if (!layer){
+
+            return
+        }
+         // show popup
+        this.popup_show();
+        var query_base =false
+        try{
+         var query_base = layer.layer_obj.query()
+        }catch(e){
+
+            this.show_popup_details()
+            return
+        }
+
+        // if the layer is a point - add some wiggle room
+        if(layer.type=="esriPMS"){
+            query_full=query_base.nearby(this.click_lat_lng, 5)
+        }else{
+            query_full=query_base.intersects(this.click_lat_lng)
+
+        }
+        if (no_page){
+            var query_full =query_base
+        }else{
+            var query_full = query_base.limit(this.limit)
+        }
+        this.run_query(query_full)
+
+
+    }
  }

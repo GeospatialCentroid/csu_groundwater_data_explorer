@@ -1124,3 +1124,6 @@ margin-bottom:-5px;
 .short_input{
     width:100px;
 }
+.leaflet-control-rotate{
+    display:none !important;
+}

@@ -47,7 +47,7 @@ Maps,overlay,https://docs.google.com/spreadsheets/d/e/2PACX-1vQobUIOGszbmDPSGv9j
         ]
     }
 ]}",
-Well Locations,section,"https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv,csv,https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv,csv,CONTENTdm number,id",,,"Well #, County",,,"Title,Reference URL,CONTENTdm number, Well #",,https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/,https://archives.mountainscholar.org/iiif/2/p17393coll166:,,," {
+Well Locations,section,"https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv,csv;https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv,csv,CONTENTdm number,id",Title,,"Well #,County,data",,,"Title,Reference URL,CONTENTdm number, Well #",,https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/,https://archives.mountainscholar.org/iiif/2/p17393coll166:,,," {
 ""renderer"": {
 ""type"": ""simple"",
 ""symbol"": {

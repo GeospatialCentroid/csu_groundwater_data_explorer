@@ -519,7 +519,7 @@ class Filter_Manager {
          $this.show_items(parent_id,item_ids)
          console.log("FIT THE BOUNDS ..........")
          if(!$this.has_earth_param){
-         layer_manager.map.fitBounds(layer_manager.layers[layer_manager.layers.length-1].layer_obj.getBounds());
+         //layer_manager.map.fitBounds(layer_manager.layers[layer_manager.layers.length-1].layer_obj.getBounds());
          }
          $this.has_earth_param=false
     }

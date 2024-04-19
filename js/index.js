@@ -1,9 +1,4 @@
 
-//var base_url="https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/"
-//var iiif_base_url="https://archives.mountainscholar.org/iiif/2/p17393coll166:"
-//
-//field_data_url="https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv"
-//field_data_post_url="https://script.google.com/macros/s/AKfycbz_A2MSHJ5Zd2szCC5oWkkFcTKZ1_VjnuEl_ywpwnrkvKk-6ZZU0y9hZRAGGSoaM1dhrQ/exec"
 
 //
 var map_manager;
@@ -16,15 +11,15 @@ var layer_rects=[]
 
 var image_manager
 
+var field_data_post_url// from the app.csv
+
 var transcription
-var transcription_mode;
+var transcription_mode =true;
 
 var params={}
 var last_params={}
 var usp={};// the url params object to be populated
 var browser_control=false; //flag for auto selecting to prevent repeat cals
-
-//var geo_locations="https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv"
 
 
 function setup_params(){
@@ -59,6 +54,20 @@ $( function() {
 });
 
 function initialize_interface() {
+
+    var sort_str=""
+    if(!$.isEmptyObject(usp) && usp.get("sort")){
+        sort_str=usp.get("sort")
+    }
+
+    $("[for='filter_bounds_checkbox']").text(LANG.SEARCH.LIMIT)
+    $("#filter_date_to").text(LANG.SEARCH.TO)
+    $("[for='filter_date_checkbox']").text(LANG.SEARCH.LIMIT_DATE)
+
+    $("#radio_data_label").text(LANG.SEARCH.RADIO_DATA_LABEL)
+
+    $("#radio_place_label").text(LANG.SEARCH.RADIO_PLACE_LABEL)
+
     setup_params()
 
     map_manager = new Map_Manager(
@@ -73,10 +82,11 @@ function initialize_interface() {
 
     map_manager.init()
 
-    image_manager = new Image_Manager({params:{}})
-
+   transcription = new Transcription({ })
      // allow for iiif viewing
+     image_manager=new Image_Manager({})
      image_manager.init()
+
      if(params['id']){
         //todo need to capture the variable
        //image_manager.show_image(iiif_base_url+params['id']+"/info.json","")
@@ -98,64 +108,21 @@ function initialize_interface() {
 
     });
     section_manager.init();
-    //to do load data when ready
-    //load_do(csv,init)
 
 }
 function after_filters(){
-    console.log("after_filters")
+
+
 }
 
 
-function load_do(_file,_do){
-    $.ajax({
-        type: "GET",
-        url: _file,
-        dataType: "text",
-        success: function(csv_txt) {
-         _do(csv_txt);
-         }
-     });
-}
 
-function init(_csv_txt){
 
-   // load the points
-   load_do(geo_locations,save_marker_data)
-
-    if(transcription_mode){
-        transcription = new Transcription({
-        field_data_post_url:field_data_post_url,
-        })
-        load_do(field_data_url,save_transcription_data)
-    }
-
-}
 function save_marker_data(_data){
     map_manager.data = $.csv.toObjects(_data);
     check_all_loaded();
 }
-function save_transcription_data(_data){
-    transcription.data = $.csv.toObjects(_data);
-    check_all_loaded();
-}
 
-function check_all_loaded(){
-
-    //if we are transcribing we need to make sure that both the geolocated sheets
-    //and the transcriptions are loaded
-  if(transcription_mode){
-    if(transcription.data && map_manager.data){
-     transcription.group_transcription()
-     transcription.connect_transcription()
-     map_manager.create_geojson()
-    }
-
-  }else{
-     map_manager.create_geojson()
-
-  }
-}
 
 function save_params(){
     var p = "?"
@@ -179,7 +146,7 @@ load_annotation_geojson= function(url,extra){
      });
 }
 parse_annotation= function(json,extra){
-         var rect =   L.geoJson(json, {pane: 'left',color: 'blue'})
+         var rect = L.geoJson(json, {pane: 'left',color: 'blue'})//todo get thei from app.csv
          rect.title=extra["title"]
          rect.tms=extra["tms"]
          rect['annotation_url']=extra['annotation_url']
@@ -272,6 +239,8 @@ function run_resize(){
             }
             $("#content").show();
            map_manager.map.invalidateSize()
+
+           image_manager.image_map.invalidateSize()
     },100)
         //update the height of the results area when a change occurs
 //        $('#side_header').bind('resize', function(){
