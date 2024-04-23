@@ -14,7 +14,7 @@ class Image_Manager {
         });
 
         this.image_map._resetView(this.image_map.getCenter(), this.image_map.getZoom());
-        //this.add_close_control()
+        this.add_close_control()
         this.add_load_control()
 
         //add resize control
@@ -44,8 +44,6 @@ class Image_Manager {
                  $("#image_map").width("0");
                 $this.update_map_size()
               }, this);
-              this._defaultCursor = this._map._container.style.cursor;
-
               return  this._container;
             }
         });
@@ -66,7 +64,7 @@ class Image_Manager {
 
               L.DomEvent.disableClickPropagation(this._container);
 
-              //this._defaultCursor = this._map._container.style.cursor;
+              this._defaultCursor = this._map._container.style.cursor;
 
               return  this._container;
             }

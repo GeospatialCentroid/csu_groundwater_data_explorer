@@ -729,6 +729,7 @@ position: absolute;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 24px 24px;
+    cursor:pointer;
 }
 
 .leaflet-spinner{
@@ -1118,7 +1119,7 @@ margin-bottom:-5px;
     padding: 0 !important;
     bottom:0;
 }
-//inner css class style//
+/*inner css class style*/
 .modal-dialog{marging:0}
 
 .short_input{
@@ -1127,3 +1128,9 @@ margin-bottom:-5px;
 .leaflet-control-rotate{
     display:none !important;
 }
+
+.ui-autocomplete {
+    background-color: #fff !important;
+    z-index: 100000;
+}
+

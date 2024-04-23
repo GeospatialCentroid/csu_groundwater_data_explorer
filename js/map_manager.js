@@ -135,13 +135,15 @@ class Map_Manager {
     map_manager.show_geojson(output_json)
 }
  popup_show(feature){
-
         var $this=this
 
         var html = '<div id="popup_content">'
-        html+='<h4>'+feature.properties.title+'</h4><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
-              +'<br/>Well #: '+feature.properties.well+'<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
-              +'</div>'
+        html+='<h6>'+feature.properties.title+'</h6><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
+        if(feature.properties.well!=""){
+        html+='<br/>Well #: '+feature.properties.well+'<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
+        }
+
+          html+='</div>'
 
         this.popup= L.popup(this.popup_options)
             .setLatLng(this.click_lat_lng)
@@ -152,6 +154,32 @@ class Map_Manager {
 //              });
 
      }
+      show_highlight_geo_json(geo_json){
+        var $this=this
+        // when a researcher hovers over a resource show the bounds on the map
+        if (typeof(this.highlighted_feature) !="undefined"){
+            this.hide_highlight_feature();
+        }
+        if (geo_json?.geometry && geo_json.geometry.type =="Point" || geo_json?.type=="MultiPoint"){
+            //special treatment for points
+            this.highlighted_feature = L.geoJSON(geo_json, {
+              pointToLayer: function (feature, latlng) {
+                        return L.marker(latlng, {icon: $this.get_marker_icon()});
+                }
+            }).addTo(this.map);
+        }else{
+            this.highlighted_feature =  L.geoJSON(geo_json,{
+                style: function (feature) {
+                    return {color: "#fff",fillColor:"#fff",fillOpacity:.5};
+                }
+                }).addTo(this.map);
+        }
+
+    }
+     hide_highlight_feature(){
+        this.map.removeLayer(this.highlighted_feature);
+        delete this.highlighted_feature;
+    }
       update_map_size(){
         // make the map fill the difference
         var window_width=$( "#map_wrapper" ).width()
@@ -251,6 +279,11 @@ class Map_Manager {
             this.map.flyToBounds(bounds);
         }
 //         this.scroll_to_map()
+     }
+     scroll_to_map(){
+//         $('html, body').animate({
+//                scrollTop: $("#map").offset().top
+//            }, 1000);
      }
       get_selected_layer(){
         // start with the last layer (top) if not yet set - check to make use the previous selection still exists

@@ -375,7 +375,7 @@ class Layer_Manager {
   }
 
   get_layer_obj(_resource_id){
-      console.log(this.layers)
+      console_log(this.layers)
       for(var i =0;i<this.layers.length;i++){
             var temp_layer = this.layers[i]
 
@@ -503,23 +503,15 @@ class Layer_Manager {
 
     }else{
       if (service_method._method=="ajax"){
-
             var layer_obj = L.layerGroup();
             this.load_ajax(url,layer_obj,_resource_id)
-
       }else if (service_method._method=="csv"){
            var layer_obj = L.layerGroup();
            this.load_tabular_data(url,layer_obj,_resource_id);
-
       }else if (service_method._method=="csv_geojson"){
-
-
-             // check if we have a layer obj already
-          var layer_obj=$this.get_layer_obj(_resource_id);
-          console.log("So close to show_csv_geojson_data",layer_obj)
+         // check if we have a layer obj already
+         var layer_obj=$this.get_layer_obj(_resource_id);
          if(layer_obj){
-              console.log("We have a layer_obj!!!!")
-
               //notice layer_obj.layer_obj
              this.show_csv_geojson_data(layer_obj.layer_obj,_resource_id,item_ids);
              return
@@ -533,9 +525,9 @@ class Layer_Manager {
           }
 
       }else{
-        console.log("Passed in",layer_options)/*filter_manager.get_bounds(resource.locn_geometry),*/ // pass in the bounds
+        console_log("Passed in",layer_options)/*filter_manager.get_bounds(resource.locn_geometry),*/ // pass in the bounds
        var layer_obj =  L[service_method._class][service_method._method](layer_options)//.addTo(this.map);
-        console.log(layer_obj)
+        console_log(layer_obj)
       }
 
     }
@@ -902,6 +894,8 @@ class Layer_Manager {
 
   }
   show_csv_geojson_data(layer_obj,_resource_id,item_ids){
+
+  console.log(layer_obj,_resource_id,item_ids)
     var $this=this
     if(!$this.map.hasLayer(layer_obj)){
         // only add the layer once
@@ -920,9 +914,11 @@ class Layer_Manager {
     var section_id=_resource_id.replaceAll('section_id_', '')
     var items_showing=section_manager.json_data[section_id].items_showing
     if(!section_manager.json_data[section_id].clustered_points){
+        //only create the cluster point object once
         section_manager.json_data[section_id].clustered_points = L.markerClusterGroup();
-        layer_obj.addLayer( section_manager.json_data[section_id].clustered_points);
+        layer_obj.addLayer(section_manager.json_data[section_id].clustered_points);
     }
+    //start a new array of points
    section_manager.json_data[section_id].geojson_markers = []
 
     $this.create_style_class(_resource_id)

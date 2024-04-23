@@ -496,7 +496,6 @@ class Filter_Manager {
     show_section(section_id){
         var $this=this
         var parent_id=section_id.replaceAll('section_id_', '')
-        console.log(section_id)
         var data = $this.section_manager.get_match(section_id)
 
         var item_ids=[]
@@ -592,11 +591,11 @@ class Filter_Manager {
             for (var i=0;i<data.length;i++){
                 if(item_id==data[i]._id){
                     if(data[i]?.feature){
-//                         setTimeout(function(){
-//
-//                         }, 1500);
-                            map_manager.map_click_event(L.geoJSON(data[i].feature).getBounds().getCenter())
-                            map_manager.show_popup_details(data[i].feature.features)
+                        console.log(data[i].feature)
+                           // map_manager.map_click_event(L.geoJSON(data[i].feature).getBounds().getCenter())
+                           // map_manager.show_popup_details(data[i].feature.features)
+                         map_manager.click_lat_lng=L.geoJSON(data[i].feature).getBounds().getCenter()
+                         map_manager.popup_show(data[i].feature.features[0])
                     }
 
                     break

@@ -50,7 +50,7 @@ class Section_Manager {
             dataType: type,
             slot: slot, //pass through param
             success: function(_data) {
-                console.log("LOADED",url)
+                console_log("LOADED",url)
                 call_back(_data,this.slot)
             }
          });
@@ -163,7 +163,7 @@ class Section_Manager {
             }
           }
           if(all_data_loaded){
-            console.log("we have all the data")
+            console_log("we have all the data")
             $this.join_data($this.json_data[slot[0]])
             //add parent_id to each item
             var all_data=$this.json_data[slot[0]].all_data
@@ -174,7 +174,7 @@ class Section_Manager {
              //clean up
               delete section.json_data;
               section.items_showing=[]
-              console.log(section)
+              console_log(section)
           }
 
           $this.check_all_section_completion()
@@ -182,10 +182,9 @@ class Section_Manager {
     check_all_section_completion(){
         var $this = section_manager
         var all_sections_data_loaded=true
-        console.log()
         for (var i=0; i<$this.json_data.length;i++){
              if(!$this.json_data[i]?.all_data){
-                console.log("check to make sure all has really loaded")
+                console_log("check to make sure all has really loaded")
                 all_sections_data_loaded =false
              }
         }
@@ -271,6 +270,9 @@ class Section_Manager {
              }
              if(temp_data[i].data){
                 obj_props["has_data"]= true
+                temp_data[i]["has_data"]= "Yes"
+             }else{
+              temp_data[i]["has_data"]= ""
              }
 
              temp_data[i]["feature"]={}
@@ -295,6 +297,7 @@ class Section_Manager {
         for (var i=0;i<all_data.length;i++){
             // inject an id for access
             all_data[i]._id=i
+             all_data[i].id=i
             //store a sort col for universal access
              all_data[i]._sort_col= all_data[i][title_col]
             console.log( all_data[i][title_col],title_col,all_data[i])
@@ -320,8 +323,6 @@ class Section_Manager {
                         if(all_data[i].feature.features[0].geometry.coordinates[0][0].length==2){
                              all_data[i].feature.features[0].geometry.coordinates=[all_data[i].feature.features[0].geometry.coordinates]
                         }
-
-
 
                     }else{
                         all_data[i].feature.features[0].geometry.coordinates.push(data_to_join.features[j].geometry.coordinates)
