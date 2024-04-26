@@ -917,9 +917,10 @@ class Layer_Manager {
         //only create the cluster point object once
         section_manager.json_data[section_id].clustered_points = L.markerClusterGroup();
         layer_obj.addLayer(section_manager.json_data[section_id].clustered_points);
+        //start a new array of points
+        section_manager.json_data[section_id].geojson_markers = []
     }
-    //start a new array of points
-   section_manager.json_data[section_id].geojson_markers = []
+    var markers =  section_manager.json_data[section_id].geojson_markers
 
     $this.create_style_class(_resource_id)
     var data = section_manager.get_match(_resource_id)
@@ -928,12 +929,12 @@ class Layer_Manager {
         var item_id=item_ids[i]
         var index =$.inArray( item_id, items_showing)
         if (index==-1){
-
+            //show the item
             if(data[item_id]?.feature){
               try{
 
                  var geo = $this.create_geo_feature(data[item_id].feature,_resource_id,layer_obj, false, false)
-                    section_manager.json_data[section_id].geojson_markers.push(geo)
+                  markers.push(geo)
                   // rather than force an id - lets associate the item_id, with the internal leaflet id
                  layer_obj.item_to_layer_id[item_id]=layer_obj.getLayerId(geo)
 
@@ -944,20 +945,13 @@ class Layer_Manager {
              }
 
         }else{
-            try{
-                // it's possible a shape Path errors-out when trying to remove, just try to remove it
-                section_manager.json_data[section_id].clustered_points.removeLayer(layer_obj.item_to_layer_id[item_id]);// note: we need to use the internal id number
-            }catch(error){
-
-            }
-
             items_showing.splice(index,1)
-
+            markers.splice(index,1)
         }
 
      }
      section_manager.json_data[section_id].clustered_points.clearLayers();
-    section_manager.json_data[section_id].clustered_points.addLayers(section_manager.json_data[section_id].geojson_markers);
+    section_manager.json_data[section_id].clustered_points.addLayers(markers);
     //layer_obj.addLayer(markers)
     //map_manager.map_zoom_event(layer_obj.getBounds())
 //    if(items_showing.length>0){
