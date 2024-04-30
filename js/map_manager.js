@@ -32,11 +32,11 @@ class Map_Manager {
     }).addTo( this.map)
 
      //
-    const search = new GeoSearch.GeoSearchControl({
-      provider: new GeoSearch.OpenStreetMapProvider(),
-    });
+//    const search = new GeoSearch.GeoSearchControl({
+//      provider: new GeoSearch.OpenStreetMapProvider(),
+//    });
 
-    this.map.addControl(search);
+    /*this.map.addControl(search);
 
    // get lat lng on click
     this.map.on('dblclick', function(e) {
@@ -79,7 +79,7 @@ class Map_Manager {
             load_do(url, $this.parse_township_section_geojson)
         }
      })
-
+*/
 
     this.map.on("moveend", function () {
       update_layer_list();

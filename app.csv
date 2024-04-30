@@ -1,5 +1,5 @@
 name,type,data,title_col,separated_cols,filter_cols,annotation_col,image_col,show_cols,year_start_col,base_url,iiif_base_url,disclaimer,color_col,drawing_info,legend,post_url
-Maps,overlay,https://docs.google.com/spreadsheets/d/e/2PACX-1vQobUIOGszbmDPSGv9jpb5M1_zQgB9oUTXQDtgx2F6Oge3LxhKBRHGolid15RLVmw/pub?gid=1684074039&single=true&output=csv,Map Name,,"Map Name, Year",Annotation,TMS,,Year,,,<p>Welcome to the CSU Groundwater</p>,Color," {
+Maps,overlay,data/Groundwater map urls.csv,Map Name,,"Map Name, Year",Annotation,TMS,,Year,,,,Color," {
 ""renderer"": {
 ""type"": ""simple"",
 ""symbol"": {
@@ -47,7 +47,7 @@ Maps,overlay,https://docs.google.com/spreadsheets/d/e/2PACX-1vQobUIOGszbmDPSGv9j
         ]
     }
 ]}",
-Well Locations,section,"https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv,csv;https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv,csv,CONTENTdm number,id",Title,,"Well #,County,has_data",,,"Title,Reference URL,CONTENTdm number, Well #",,https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/,https://archives.mountainscholar.org/iiif/2/p17393coll166:,,," {
+Historic Groundwater Data Interactive Map,section,"https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv,csv;https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv,csv,CONTENTdm number,id",Title,,"Well #,County,has_data",,,"Title,Reference URL,CONTENTdm number, Well #",,https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/,https://archives.mountainscholar.org/iiif/2/p17393coll166:,"<p>Welcome to the Historic Groundwater Data Interactive Map. This project is a joint effort between CSU Libraries Archives and Special Collections and the Geospatial Centroid.</p><p>The focus of this map is on field data sheets which reveal histroic groundwater levels from select areas along the front range.</p><p>Clicking the blue rectangles on the map reveal the scanned maps used to locate grounwater wells, and the points link to the scanned field data sheets used to collection measurements.</p>",," {
 ""renderer"": {
 ""type"": ""simple"",
 ""symbol"": {
