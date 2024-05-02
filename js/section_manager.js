@@ -72,7 +72,6 @@ class Section_Manager {
                     $this.setup_disclaimer($this.data[i],i)
                 }
             }else if ($this.data[i].type=="overlay"){
-
                  $this.load_data($this.data[i].data,false,$this.add_overlay,i)
             }
 

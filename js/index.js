@@ -146,7 +146,8 @@ load_annotation_geojson= function(url,extra){
      });
 }
 parse_annotation= function(json,extra){
-         var rect = L.geoJson(json, {pane: 'left',color: 'blue'})//todo get thei from app.csv
+        console.log("parse_annotation")
+         var rect = L.geoJson(json, {pane: 'left',color: 'blue'})//todo get this from app.csv
          rect.title=extra["title"]
          rect.tms=extra["tms"]
          rect['annotation_url']=extra['annotation_url']

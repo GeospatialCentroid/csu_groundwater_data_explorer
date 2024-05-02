@@ -35,7 +35,7 @@ class Map_Manager {
 //    const search = new GeoSearch.GeoSearchControl({
 //      provider: new GeoSearch.OpenStreetMapProvider(),
 //    });
-
+     L.control.layer_list({ position: 'bottomleft' }).addTo( this.map);
     /*this.map.addControl(search);
 
    // get lat lng on click
@@ -44,7 +44,7 @@ class Map_Manager {
     });
     //
 
-    L.control.layer_list({ position: 'bottomleft' }).addTo( this.map);
+
 
      L.control.location_search({ position: 'topleft' }).addTo( this.map);
      var search_html=""
