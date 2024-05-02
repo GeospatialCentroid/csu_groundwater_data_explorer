@@ -67,13 +67,10 @@ class Section_Manager {
         for (var i=0; i< $this.data.length;i++){
             if($this.data[i].type=="section"){
                 $this.json_data.push($this.data[i])
-                // to do make this more robust
                 //check if there is a disclaimer
                 if($this.data[i]?.disclaimer){
                     $this.setup_disclaimer($this.data[i],i)
                 }
-
-
             }else if ($this.data[i].type=="overlay"){
 
                  $this.load_data($this.data[i].data,false,$this.add_overlay,i)
@@ -252,43 +249,45 @@ class Section_Manager {
 
     }
     convert_csv_to_geojson(section,_data,title_col){
-        var temp_data=_data
+        var temp_data=[]
         field_data_post_url = section.post_url
-         for (var i=0;i<temp_data.length;i++){
-             temp_data[i]["_id"]=i//IMPORTANT for controlling visibility
-             temp_data[i]._sort_col= temp_data[i][title_col]
+         for (var i=0;i<_data.length;i++){
+            if(_data[i]["Well #"]!=""){
+                _data[i]["_id"]=i//IMPORTANT for controlling visibility
+                 _data[i]._sort_col= _data[i][title_col]
 
-             var obj_props={
-                "id":Number(temp_data[i]["CONTENTdm number"]),
-               "title":temp_data[i]["Title"],
-                "info_page":temp_data[i]["Reference URL"],
-                "id":temp_data[i]["CONTENTdm number"],
-                "thumb_url":section.base_url+temp_data[i]["CONTENTdm number"]+"/thumbnail",
-                "well":temp_data[i]["Well #"],
-                "iiif":section.iiif_base_url+temp_data[i]["CONTENTdm number"]+"/info.json",
-                "attribution":temp_data[i]["Title"],
-             }
-             if(temp_data[i].data){
-                obj_props["has_data"]= true
-                temp_data[i]["has_data"]= "Yes"
-             }else{
-              temp_data[i]["has_data"]= ""
-             }
+                 var obj_props={
+                    "id":Number(_data[i]["CONTENTdm number"]),
+                   "title":_data[i]["Title"],
+                    "info_page":_data[i]["Reference URL"],
+                    "id":_data[i]["CONTENTdm number"],
+                    "thumb_url":section.base_url+_data[i]["CONTENTdm number"]+"/thumbnail",
+                    "well":_data[i]["Well #"],
+                    "iiif":section.iiif_base_url+_data[i]["CONTENTdm number"]+"/info.json",
+                    "attribution":_data[i]["Title"],
+                 }
+                 if(_data[i].data){
+                    obj_props["has_data"]= true
+                    _data[i]["has_data"]= "Yes"
+                 }else{
+                  _data[i]["has_data"]= ""
+                 }
 
-             temp_data[i]["feature"]={}
-             temp_data[i]["feature"]["features"] =[
-                {
-                  "type": "Feature",
-                  "properties": obj_props,
-                  "geometry": {
-                    "coordinates": [
-                         Number(temp_data[i].Longitude),
-                         Number(temp_data[i].Latitude),
-                    ],
-                    "type": "Point"
-                  }
-                }]
-
+                 _data[i]["feature"]={}
+                 _data[i]["feature"]["features"] =[
+                    {
+                      "type": "Feature",
+                      "properties": obj_props,
+                      "geometry": {
+                        "coordinates": [
+                             Number(_data[i].Longitude),
+                             Number(_data[i].Latitude),
+                        ],
+                        "type": "Point"
+                      }
+                    }]
+                temp_data.push(_data[i])
+            }
          }
         return temp_data
     }

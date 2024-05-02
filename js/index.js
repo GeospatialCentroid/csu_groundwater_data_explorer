@@ -105,7 +105,7 @@ function initialize_interface() {
     section_manager=new Section_Manager({config:"app.csv",map_manager:map_manager})
     filter_manager = new Filter_Manager({
         section_manager:section_manager,
-
+        place_url:'https://nominatim.openstreetmap.org/search?format=json',
     });
     section_manager.init();
 
