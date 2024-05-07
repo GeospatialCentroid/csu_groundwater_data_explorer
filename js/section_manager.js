@@ -221,7 +221,7 @@ class Section_Manager {
                     this.update_geojson_properties(section.all_data,show_cols,separated_cols,section?.image_col,section?.color_col)
 
                 }else if(type=="csv"){
-                    console.log(transcription)
+                    //console.log(transcription)
                     transcription.group_transcription($.csv.toObjects(data_to_join.data.replaceAll('\t', '')))
 
                     section.all_data=transcription.connect_transcription(section.all_data)
@@ -251,8 +251,9 @@ class Section_Manager {
         var temp_data=[]
         field_data_post_url = section.post_url
          for (var i=0;i<_data.length;i++){
+            //todo put this filter in the config
             if(_data[i]["Well #"]!=""){
-                _data[i]["_id"]=i//IMPORTANT for controlling visibility
+                _data[i]["_id"]=temp_data.length//IMPORTANT for controlling visibility
                  _data[i]._sort_col= _data[i][title_col]
 
                  var obj_props={
@@ -262,6 +263,7 @@ class Section_Manager {
                     "id":_data[i]["CONTENTdm number"],
                     "thumb_url":section.base_url+_data[i]["CONTENTdm number"]+"/thumbnail",
                     "well":_data[i]["Well #"],
+                    "county":_data[i]["County"],
                     "iiif":section.iiif_base_url+_data[i]["CONTENTdm number"]+"/info.json",
                     "attribution":_data[i]["Title"],
                  }
@@ -379,17 +381,17 @@ class Section_Manager {
         // if there is only one section, select it and move to results
         //if(this.json_data.length==1){
             setTimeout(() => {
-               $("#section_id_0").trigger("click");
-                $("#arrow_0").trigger("click");
-
-                setTimeout(() => {$("#panels").show();} , "500");
                if(this.json_data[0]?.legend){
-
-                layer_manager.create_legend(JSON.parse(this.json_data[0]?.legend),"section_id_1")
+                    layer_manager.create_legend(JSON.parse(this.json_data[0]?.legend),"section_id_1")
                }
+
+               $("#section_id_0").trigger("click");
+               $("#arrow_0").trigger("click");
+               setTimeout(() => {$("#panels").show();} , "500");
+
                 //
                  $("#nav_wrapper").hide();
-                         run_resize()
+                 run_resize()
             }, "100");
 
        // }

@@ -146,7 +146,7 @@ class Layer_Manager {
 
         html +="<div class='item_title font-weight-bold inline'>"+title+"</span></div>"
 
-         html += this.get_slider_html(id)
+         //html += this.get_slider_html(id)
         //
         //html +="<button type='button' id='"+id+"_toggle' class='btn btn-primary "+id+"_toggle' onclick='layer_manager."+add_func+"(\""+id+"\")'>"+add_txt+"</button>"
 //        //
@@ -435,7 +435,7 @@ class Layer_Manager {
     //todo attempt overcoming cors
 //     layer_options.url='http://localhost:8000/sr/'+encodeURIComponent(layer_options.url)
      //check for a legend
-     console.log(service_method)
+     //console.log(service_method)
     if(service_method._method=="tiledMapLayer" || service_method._method=="dynamicMapLayer" ){
 
         // todo test tms
@@ -895,7 +895,7 @@ class Layer_Manager {
   }
   show_csv_geojson_data(layer_obj,_resource_id,item_ids){
 
-  console.log(layer_obj,_resource_id,item_ids)
+   //console.log(layer_obj,_resource_id,item_ids)
     var $this=this
     if(!$this.map.hasLayer(layer_obj)){
         // only add the layer once
@@ -959,14 +959,11 @@ class Layer_Manager {
 //    }
     // associate data for access during map click selection
     layer_obj.data = data
-
-
-
   }
 
     //
     get_layer_select_html(_layer_id,_change_event,is_table,omit_selected){
-        console.log("todo get_layer_select_html")
+        console_log("todo get_layer_select_html")
         return
         var html=""
         if(_change_event){
@@ -1009,7 +1006,7 @@ class Layer_Manager {
         var $this = this
         var html = "<li class=''>"
          html += this.get_base_map_dropdown_html()
-         html+= this.get_slider_html("basemap");
+         //html+= this.get_slider_html("basemap");
          var id = "basemap"
          var fill_color =  rgbStrToHex($(".leaflet-container").css("backgroundColor"))
          //html += "<div class='color_box'><input type='text' id='"+id+"_base_color' value='"+fill_color+"'/><br/><label for='"+id+"_base_color' >"+LANG.BASEMAP.BACKGROUND+"</label></div>"
@@ -1017,8 +1014,8 @@ class Layer_Manager {
 
          $("#basemap_layer").html(html)
          html += "</li>"
-         this.make_slider("basemap_slider",100)
-         this.make_color_palette(id+'_base_color')
+//         this.make_slider("basemap_slider",100)
+//         this.make_color_palette(id+'_base_color')
 
           this.map.createPane("basemap");
           this.map.getPane("basemap").style.zIndex = 1;
@@ -1047,7 +1044,8 @@ class Layer_Manager {
         var basemaps=LANG.BASEMAP.BASEMAP_OPTIONS
         // get all the basemaps and show the images in a dropdown
         var first_item = basemaps[Object.keys(basemaps)[0]];
-        var html= "<div class='item_title font-weight-bold'>"+LANG.BASEMAP.TITLE+"</div> "
+        var html=""
+        //var html= "<div class='item_title font-weight-bold'>"+LANG.BASEMAP.TITLE+"</div> "
         html+= '<div class="btn-group dropup"><button id="basemap_layer_but" style="float:left;max-height:none;" class="btn btn-primary dropdown-toggle " type="button" data-toggle="dropdown" title="'+LANG.BASEMAP.TIP+'" data-bs-toggle="dropdown" aria-expanded="false">'
         html+='<img id="basemap_layer_img" class="thumbnail_small" src="'+first_item.image+'"/>'
         html+='</button>'

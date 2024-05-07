@@ -25,11 +25,11 @@ class Map_Manager {
      this.map.createPane('left');
     var right_pane=  this.map.createPane('right');
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    pane: 'left',
-    attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo( this.map)
+//    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//    pane: 'left',
+//    attribution:
+//    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//    }).addTo( this.map)
 
      //
 //    const search = new GeoSearch.GeoSearchControl({
@@ -140,6 +140,7 @@ class Map_Manager {
         var html = '<div id="popup_content">'
         html+='<h6>'+feature.properties.title+'</h6><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
         if(feature.properties.well!=""){
+        //html+='<br/>County: '+feature.properties.county+''
         html+='<br/>Well #: '+feature.properties.well+'<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
         }
 

@@ -73,7 +73,8 @@ class Filter_Manager {
         $(".total_results").text(LANG.RESULT.FOUND+" "+num+" "+LANG.RESULT.RESULTS)
         $(".spinner-border").hide();
 
-
+        setTimeout(() => { run_resize()} , "500");
+        console.log("run resize")
     }
     populate_search(data){
        // to make it easy to select a dataset, an autocomplete control is used and populated based on entered values
@@ -634,7 +635,7 @@ class Filter_Manager {
              showing="checked";//we're showing them all for now
              html += "<li class='list-group-item d-flex justify-content-between list-group-item-action'>"
              if(sorted_data[i]?.feature){
-                 html+='<span style="cursor: pointer;" onclick="filter_manager.zoom_item('+parent_id+','+sorted_data[i]._id+');filter_manager.click_item('+parent_id+','+sorted_data[i]._id+');javascript:map_manager.scroll_to_map()">'+sorted_data[i][title_col]+'</span>'
+                 html+='<a href="#" onclick="filter_manager.zoom_item('+parent_id+','+sorted_data[i]._id+');filter_manager.click_item('+parent_id+','+sorted_data[i]._id+');javascript:map_manager.scroll_to_map()">'+sorted_data[i][title_col]+'</a>'
                  html+='<span><div class="form-check"  onclick="filter_manager.show_items('+parent_id+',['+sorted_data[i]._id+'])"><input class="form-check-input" type="checkbox" '+showing+' value="" id="section_'+parent_id+'_'+sorted_data[i]._id+'" ></div>'
              }else{
                   html+=sorted_data[i][title_col]

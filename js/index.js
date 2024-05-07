@@ -181,7 +181,6 @@ toggle_layer = function(id){
         map_manager.map.addLayer(layer.map_layer)
         // we need to make sure a layer exist first before side to side control can function
         if(!side_by_side_control){
-        console.log("side by side")
             side_by_side_control = L.control.sideBySide(layer.map_layer, []).addTo(map_manager.map);
         }
      }else{
@@ -191,9 +190,23 @@ toggle_layer = function(id){
             this.off('click')
          });
         layer.toggle="show"
+        remove_side_by_side()
      }
      $("#layer_but_"+id).html(layer.toggle)
 
+}
+remove_side_by_side = function(){
+    var hide_control=true
+    for(var i = 0; i<layer_rects.length;i++){
+       if(layer_rects[i].toggle=='hide'){
+            hide_control=false
+       }
+    }
+
+    if(hide_control){
+         side_by_side_control.remove(map_manager.map);
+        side_by_side_control = null
+    }
 }
 
 
@@ -213,57 +226,65 @@ function copyElementToClipboard(element) {
   document.execCommand('copy');
   window.getSelection().removeAllRanges();
 }
+//prevent calling many times during window resize
+var timeout_resizer;
 
-function run_resize(){
-    $( window ).resize( window_resize);
-    setTimeout(function(){
-             $( window ).trigger("resize");
+function run_resize() {
+    if(timeout_resizer){
+        clearTimeout(timeout_resizer)
+        clearTimeout(timeout_resizer)
+    }
+    timeout_resizer= setTimeout(function(){
+        run_resize_do()
+        window_resize_do();
+    },200)
+ }
+ $(window).resize(run_resize)
+function run_resize_do(){
+         // leave on the dynamic links - turn off the hrefs
+         $("#browse_panel .card-body a").attr('href', "javascript: void(0)");
 
-             // leave on the dynamic links - turn off the hrefs
-             $("#browse_panel .card-body a").attr('href', "javascript: void(0)");
-
-             // rely on scroll advance for results
-             $("#next_link").hide();
+         // rely on scroll advance for results
+         $("#next_link").hide();
 
 
-            // update paging
+        // update paging
 //            filter_manager.update_parent_toggle_buttons(".content_right")
 //            filter_manager.update_parent_toggle_buttons("#details_panel")
 //            filter_manager.update_toggle_button()
-            if(! DEBUGMODE){
-                $("#document .page_nav").hide()
-            }else{
-                //append d=1, so that debug mode remains
-                $("#document .page_nav a").each(function() {
-                   $(this).attr("href",  $(this).attr("href") + '&d=1');
-                });
-            }
-            $("#content").show();
-           map_manager.map.invalidateSize()
+        if(! DEBUGMODE){
+            $("#document .page_nav").hide()
+        }else{
+            //append d=1, so that debug mode remains
+            $("#document .page_nav a").each(function() {
+               $(this).attr("href",  $(this).attr("href") + '&d=1');
+            });
+        }
+        $("#content").show();
+        map_manager.map.invalidateSize()
 
-           image_manager.image_map.invalidateSize()
-    },100)
-        //update the height of the results area when a change occurs
-//        $('#side_header').bind('resize', function(){
-//
-//    });
-
+        image_manager.image_map.invalidateSize()
 }
-function window_resize() {
-        var data_table_height=0
+
+ function window_resize_do(){
+     var data_table_height=0
          if( $("#data_table_wrapper").is(":visible")){
            data_table_height= $("#data_table_wrapper").height()
         }
         var header_height=$("#header").outerHeight()+20;
         var footer_height=15//$("#footer").height()
-        var window_height= $(window).outerHeight()
+        var window_height= $(window).height()
         var window_width= $(window).width()
         var minus_height=header_height+footer_height
         console.log("CONTENT HEIGHT",window_height,minus_height,header_height,footer_height)
        $("#content").height(window_height-minus_height)
 
        $("#map_wrapper").height(window_height-minus_height-data_table_height)
+       //this gets out of hannd with too many results
        var scroll_height=window_height-minus_height-$("#side_header").outerHeight()
+//       if(scroll_height>800){
+//        scroll_height=800;
+//       }
        //-$("#tabs").outerHeight()-$("#nav_wrapper").outerHeight()
        $("#panels").height(scroll_height)
        $(".panel").height(scroll_height)
@@ -320,5 +341,4 @@ function window_resize() {
         }
 
         $("#result_wrapper").css({"height":scroll_height-$("#filter_area").height()})
-
  }

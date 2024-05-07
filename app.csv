@@ -1,4 +1,32 @@
 name,type,data,title_col,separated_cols,filter_cols,annotation_col,image_col,show_cols,year_start_col,base_url,iiif_base_url,disclaimer,color_col,drawing_info,legend,post_url
+Historic Groundwater Interactive Map,section,"https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv,csv;https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv,csv,CONTENTdm number,id",Title,,County,,,"Title,Reference URL,CONTENTdm number, Well #",,https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/,https://archives.mountainscholar.org/iiif/2/p17393coll166:,"<p>Welcome to the Historic Groundwater Interactive Map. This project is a joint effort between CSU Libraries Archives and Special Collections and the Geospatial Centroid.</p><p>The focus of this map is on field data sheets which reveal historic groundwater levels from select areas along the front range.</p><p>Clicking the blue rectangles on the map will reveal the scanned maps used to locate grounwater wells, and the map points link to the scanned field data sheets used to capture measurements.</p> <p>Special thanks to Lilly Perez, Lucas Roy, and Connor Siegfreid for Georeferencing and Geolocating these data.</p>",," {
+""renderer"": {
+""type"": ""simple"",
+""symbol"": {
+""type"": ""esriSFS"",
+""style"": ""esriSFSSolid"",
+""color"": [
+40,
+167,
+69,
+150
+],
+""outline"": {
+""type"": ""esriSLS"",
+""style"": ""esriSLSSolid"",
+""color"": [
+40,
+167,
+69,
+255
+],
+""width"": 1.5
+}
+}
+},
+""transparency"": 0,
+""labelingInfo"": null
+}",,https://script.google.com/macros/s/AKfycbz_A2MSHJ5Zd2szCC5oWkkFcTKZ1_VjnuEl_ywpwnrkvKk-6ZZU0y9hZRAGGSoaM1dhrQ/exec
 Maps,overlay,data/Groundwater map urls.csv,Map Name,,"Map Name, Year",Annotation,TMS,,Year,,,,Color," {
 ""renderer"": {
 ""type"": ""simple"",
@@ -47,31 +75,3 @@ Maps,overlay,data/Groundwater map urls.csv,Map Name,,"Map Name, Year",Annotation
         ]
     }
 ]}",
-Historic Groundwater Interactive Map,section,"https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGI3aCfUlvPm1ctzPWjdHqqFueh6lZB71bK5bxh_OhGNctO317h9aQJn9C98u6rjGNan5-T4kxZA2/pub?gid=1548886854&single=true&output=csv,csv;https://docs.google.com/spreadsheets/d/e/2PACX-1vSDqaQMTu6Peq8FV8Z6lBW2hr9uz2kQ4s3RaW98W0p9Kq-UsE88yrEybWwUzJdfAsuW9RQptY-dibbf/pub?output=csv,csv,CONTENTdm number,id",Title,,County,,,"Title,Reference URL,CONTENTdm number, Well #",,https://archives.mountainscholar.org/digital/api/singleitem/collection/p17393coll166/id/,https://archives.mountainscholar.org/iiif/2/p17393coll166:,"<p>Welcome to the Historic Groundwater Interactive Map. This project is a joint effort between CSU Libraries Archives and Special Collections and the Geospatial Centroid.</p><p>The focus of this map is on field data sheets which reveal historic groundwater levels from select areas along the front range.</p><p>Clicking the blue rectangles on the map will reveal the scanned maps used to locate grounwater wells, and the map points link to the scanned field data sheets used to capture measurements.</p>",," {
-""renderer"": {
-""type"": ""simple"",
-""symbol"": {
-""type"": ""esriSFS"",
-""style"": ""esriSFSSolid"",
-""color"": [
-40,
-167,
-69,
-150
-],
-""outline"": {
-""type"": ""esriSLS"",
-""style"": ""esriSLSSolid"",
-""color"": [
-40,
-167,
-69,
-255
-],
-""width"": 1.5
-}
-}
-},
-""transparency"": 0,
-""labelingInfo"": null
-}",,https://script.google.com/macros/s/AKfycbz_A2MSHJ5Zd2szCC5oWkkFcTKZ1_VjnuEl_ywpwnrkvKk-6ZZU0y9hZRAGGSoaM1dhrQ/exec
