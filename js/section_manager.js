@@ -387,6 +387,8 @@ class Section_Manager {
 
                $("#section_id_0").trigger("click");
                $("#arrow_0").trigger("click");
+               $("#sections_view").hide();
+               //.tabIndex = -1;
                setTimeout(() => {$("#panels").show();} , "500");
 
                 //
