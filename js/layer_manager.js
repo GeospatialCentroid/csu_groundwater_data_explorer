@@ -1123,9 +1123,12 @@ class Layer_Manager {
                    if(l['legend'][j]?.imageData){
                         html+='<img alt="'+label+'" src="data:image/png;base64,'+l['legend'][j].imageData+'" border="0" width="20" height="20" class="legend_symbol">'
                    }else if(l['legend'][j]?.color){
-                        var color=l['legend'][j]?.color
-
-                        html+='<div alt="'+label+'" style="border-width: 1px;opacity: 0.5;width:20px;height:20px;background:'+color+';border:'+color+';"  class="legend_symbol"></div>'
+                        var color = l['legend'][j]?.color
+                        var class_ = ""
+                        if ( l['legend'][j]?.class){
+                            class_ = l['legend'][j]?.class
+                        }
+                        html+='<div alt="'+label+'" style="border-width: 1px;opacity: 0.5;width:20px;height:20px;background:'+color+';border:'+color+';"  class="legend_symbol '+class_+'"></div>'
                    }
                    html+='<span class="legend_label">'+label+'</span></label><br/>'
 

@@ -88,6 +88,8 @@ class Map_Manager {
          map_manager.set_url_params("z", map_manager.map.getZoom())
          save_params()
     });
+
+    this.add_legend()
   }
 
 
@@ -346,5 +348,28 @@ class Map_Manager {
         this.run_query(query_full)
 
 
+    }
+
+    add_legend(){
+        var header ="<span class='legend_title'>"+"</span>"
+        //add custom control
+        L.Control.MyControl = L.Control.extend({
+          onAdd: function(map) {
+            var el = L.DomUtil.create('div', 'legend');
+            el.innerHTML = header+'<div id="legend"></div>';
+            return el;
+          },
+          onRemove: function(map) {
+            // Nothing to do here
+          }
+        });
+
+        L.control.myControl = function(opts) {
+          return new L.Control.MyControl(opts);
+        }
+
+        L.control.myControl({
+          position: 'bottomright'
+        }).addTo(this.map);
     }
  }

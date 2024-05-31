@@ -162,7 +162,7 @@ parse_annotation= function(json,extra){
 }
 
 update_layer_list=function(){
-    var html=""
+    var html="<span class='list_title'>Overprints in view </span><br/>"
     var map_bounds=map_manager.map.getBounds()
     for(var i =0;i<layer_rects.length;i++){
         if(map_bounds.intersects(layer_rects[i].getBounds())){
