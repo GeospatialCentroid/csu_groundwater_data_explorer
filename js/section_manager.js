@@ -126,9 +126,9 @@ class Section_Manager {
             // section_manager.json_data[slot].all_data=data[i]
             // section_manager.json_data[slot].all_data["title_col"]=data[i].name
             // section_manager.json_data[slot].all_data["id"]="section_id_"+slot
-
-            load_annotation_geojson(data[i][col_settings.annotation_col]+".geojson",{'annotation_url':data[i][col_settings.annotation_col],'tms':data[i][col_settings.image_col],"title":data[i][col_settings.title_col]+" "+data[i][col_settings.year_start_col]})
-
+            if(data[i][col_settings.annotation_col]!=""){
+                load_annotation_geojson(data[i][col_settings.annotation_col]+".geojson",{'annotation_url':data[i][col_settings.annotation_col],'tms':data[i][col_settings.image_col],'Image URL':data[i]["Image URL"],"title":data[i][col_settings.title_col]+" "+data[i][col_settings.year_start_col]})
+            }
          }
          //section_manager.toggle_overlay()
     }
@@ -207,7 +207,7 @@ class Section_Manager {
         //starting with the second dataset, look for the left_join_col,right_join_col
         //When matched, map all the parameters to the first dataset
         if(section.data.length>0){
-        console.log(section.data.length)
+
             for (var j=1;j<section.data.length;j++){
                 var data_to_join=section.data[j]
                 var type=data_to_join[1]
@@ -229,13 +229,17 @@ class Section_Manager {
 
 
                  }
-                  console.log(section.filter_cols)
-                    var show_cols=section.show_cols.split(",").map(function(item) {
+                    section.show_cols=section.show_cols.split(",").map(function(item) {
                           return item.trim();
                         });
+
                     var filter_cols=section.filter_cols.split(",").map(function(item) {
                           return item.trim();
                         });
+                     if(transcription_mode){
+                       filter_cols.push("has_data")
+
+                      }
                     var separated_cols=section.separated_cols.split(",").map(function(item) {
                           return item.trim();
                         });
@@ -267,13 +271,14 @@ class Section_Manager {
                     "iiif":section.iiif_base_url+_data[i]["CONTENTdm number"]+"/info.json",
                     "attribution":_data[i]["Title"],
                  }
-                 if(_data[i].data){
-                    obj_props["has_data"]= true
-                    _data[i]["has_data"]= "Yes"
-                 }else{
-                  _data[i]["has_data"]= ""
-                 }
-
+                  if(transcription_mode){
+                     if(_data[i].data){
+                        obj_props["has_data"]= true
+                        _data[i]["has_data"]= "Yes"
+                     }else{
+                      _data[i]["has_data"]= ""
+                     }
+                }
                  _data[i]["feature"]={}
                  _data[i]["feature"]["features"] =[
                     {
@@ -382,8 +387,25 @@ class Section_Manager {
         //if(this.json_data.length==1){
             setTimeout(() => {
                if(this.json_data[0]?.legend){
-                    layer_manager.create_legend(JSON.parse(this.json_data[0]?.legend),"section_id_1")
+                    layer_manager.create_legend(JSON.parse(this.json_data[0]?.legend),"section_id_0")
                }
+
+            layer_manager.create_legend({"layers":[
+            {
+                "layerId": 0,
+                "layerName": "",
+                "layerType": "Feature Layer",
+                "legend": [
+                    {
+                        "label": "Overprint footprint",
+                        "color": "#0000FF",
+                        "height": 20,
+                        "width": 20
+                    },
+
+                ]
+            }
+            ]},"section_id_1")
 
                $("#section_id_0").trigger("click");
                $("#arrow_0").trigger("click");

@@ -7,19 +7,21 @@ var layer_manager;
 var table_manager;
 var click_marker;
 var side_by_side_control
+var rects;// the layer group
 var layer_rects=[]
-
+var rect_requests=[];// used to store all the rectangles requests
 var image_manager
 
 var field_data_post_url// from the app.csv
 
 var transcription
-var transcription_mode =true;
+var transcription_mode =false;
 
 var params={}
 var last_params={}
 var usp={};// the url params object to be populated
 var browser_control=false; //flag for auto selecting to prevent repeat cals
+
 
 
 function setup_params(){
@@ -135,6 +137,8 @@ function save_params(){
 
 
 load_annotation_geojson= function(url,extra){
+    rect_requests.push(url)
+
     $.ajax({
         type: "GET",
         url: url,
@@ -142,6 +146,11 @@ load_annotation_geojson= function(url,extra){
         extra:extra,
         success: function(json) {
          parse_annotation(json,extra);
+         //when all the rects have been requested
+         if(layer_rects.length==rect_requests.length){
+            rects=L.layerGroup(layer_rects , {pane: 'left'})
+            rects.addTo(map_manager.map);
+         }
          }
      });
 }
@@ -150,23 +159,26 @@ parse_annotation= function(json,extra){
          var rect = L.geoJson(json, {pane: 'left',color: 'blue'})//todo get this from app.csv
          rect.title=extra["title"]
          rect.tms=extra["tms"]
+         rect.url=extra["Image URL"]
          rect['annotation_url']=extra['annotation_url']
          rect.toggle="show"
-         rect.addTo(map_manager.map);
          layer_rects.push(rect)
          rect.id=layer_rects.length-1
          rect.on('click', function () {
             toggle_layer(this.id)
             this.off('click')
          });
+
 }
 
 update_layer_list=function(){
-    var html="<span class='list_title'>Overprints in view </span><br/>"
+    var html=""
     var map_bounds=map_manager.map.getBounds()
     for(var i =0;i<layer_rects.length;i++){
         if(map_bounds.intersects(layer_rects[i].getBounds())){
-            html+=layer_rects[i].title+" <a id='layer_but_"+i+"' href='#' onclick='toggle_layer("+i+");'>"+layer_rects[i].toggle+"</a><br/>"
+
+            html+="<a target='_blank' href='"+layer_rects[i].url+"'>"+layer_rects[i].title+"</a> <a id='layer_but_"+i+"' href='#' onclick='toggle_layer("+i+");'>"+layer_rects[i].toggle+"</a>"
+            html+=" <div id='layer_but_spin_"+i+"' style='display:none;' class='spinner-border spinner-border-sm' ></div>"+"<br/>"
 
         }
 
@@ -176,9 +188,17 @@ update_layer_list=function(){
 toggle_layer = function(id){
     var layer = layer_rects[id]
     if(layer.toggle=="show"){
+        $("#layer_but_spin_"+id).show();
         layer.toggle="hide"
         layer.map_layer =new Allmaps.WarpedMapLayer(layer['annotation_url'],{pane: 'right'})
         map_manager.map.addLayer(layer.map_layer)
+         map_manager.map.on(
+              'warpedmapadded',
+              (event) => {
+               $("#layer_but_spin_"+layer.id).hide();
+              },
+              map_manager.map
+            )
         // we need to make sure a layer exist first before side to side control can function
         if(!side_by_side_control){
             side_by_side_control = L.control.sideBySide(layer.map_layer, []).addTo(map_manager.map);

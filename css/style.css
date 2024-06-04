@@ -1074,7 +1074,7 @@ margin-bottom:-5px;
 
 
 /* specific styles */
-#layer_list{
+#layer_list_wrapper{
     background-color:#ffffff;
     max-height:300px;
     overflow-y:auto;

@@ -36,6 +36,18 @@ class Map_Manager {
 //      provider: new GeoSearch.OpenStreetMapProvider(),
 //    });
      L.control.layer_list({ position: 'bottomleft' }).addTo( this.map);
+    var html=  "<span class='list_title'>Overprints in view</span> <input id='toggle_overprint_footprint_checkbox' type='checkbox' title='show/hide overprint footprints' checked/>"
+    $("#layer_list_title").html(html)
+    $('#toggle_overprint_footprint_checkbox').change(function() {
+        if(this.checked) {
+             rects.addTo(map_manager.map);
+             $("#legend_section_id_1").show()
+        }else{
+             map_manager.map.removeLayer(rects);
+              $("#legend_section_id_1").hide()
+        }
+
+    });
     /*this.map.addControl(search);
 
    // get lat lng on click
@@ -88,6 +100,8 @@ class Map_Manager {
          map_manager.set_url_params("z", map_manager.map.getZoom())
          save_params()
     });
+
+
 
     this.add_legend()
   }
@@ -143,7 +157,11 @@ class Map_Manager {
         html+='<h6>'+feature.properties.title+'</h6><a href="javascript:void(0);" onclick="image_manager.show_image(\''+feature.properties.iiif+'\',\''+feature.properties.attribution+'\',\''+feature.properties.info_page+'\')" ><img class="center" src="'+feature.properties.thumb_url+'" alt="'+feature.properties.title+'"></a> '
         if(feature.properties.well!=""){
         //html+='<br/>County: '+feature.properties.county+''
-        html+='<br/>Well #: '+feature.properties.well+'<br/> <a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
+        html+='<br/>Well #: '+feature.properties.well+'<br/>'
+            if(transcription_mode){
+
+            html+='<a href="javascript:void(0);" onclick="transcription.show_form('+feature.properties.id+')" >transcription</a>'
+            }
         }
 
           html+='</div>'

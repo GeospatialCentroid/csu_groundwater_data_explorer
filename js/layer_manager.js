@@ -1109,6 +1109,7 @@ class Layer_Manager {
     create_legend(data,_resource_id){
         var html = '<div id="legend_'+_resource_id+'">'
         if(data?.['layers']){
+        console.log(data['layers'])
             for (var i=0;i<data['layers'].length;i++){
                 var l = data['layers'][i]
                 var layer_name=l.layerName
