@@ -79,8 +79,14 @@ class Section_Manager {
         for (var i=0; i< $this.json_data.length;i++){
              // split files by semi-colon
             $this.json_data[i].data= $this.json_data[i].data.split(";")
+            if(!transcription_mode &&  $this.json_data[i].data.length>1){
+                    //Remove the transcript file
+                    $this.json_data[i].data=[$this.json_data[i].data[0]]
+            }
             for (var j=0;j< $this.json_data[i].data.length;j++){
                 // split file parts (file, type, left_join_col,right_join_col) by commas
+
+                console.log($this.json_data[i].data[j].split(","))
                 $this.json_data[i].data[j]=$this.json_data[i].data[j].split(",")
 
                 $this.load_data($this.json_data[i].data[j][0],$this.json_data[i].data[j][1],$this.check_section_completion,[i,j])
@@ -119,15 +125,25 @@ class Section_Manager {
 
          // add ref to the app settings
          var col_settings= section_manager.data[_slot]
+
+         //
+         console.log("we have this many maps ",data.length)
          for (var i=0; i<data.length;i++){
-            //inject the loaded data
-            //  var slot=_slot+i//add i to treat each individually
-            // section_manager.json_data[slot]={}
-            // section_manager.json_data[slot].all_data=data[i]
-            // section_manager.json_data[slot].all_data["title_col"]=data[i].name
-            // section_manager.json_data[slot].all_data["id"]="section_id_"+slot
+
             if(data[i][col_settings.annotation_col]!=""){
-                load_annotation_geojson(data[i][col_settings.annotation_col]+".geojson",{'annotation_url':data[i][col_settings.annotation_col],'tms':data[i][col_settings.image_col],'Image URL':data[i]["Image URL"],"title":data[i][col_settings.title_col]+" "+data[i][col_settings.year_start_col]})
+
+                var extra = {'annotation_url':data[i][col_settings.annotation_col],'tms':data[i][col_settings.image_col],'Image URL':data[i]["Image URL"],"title":data[i][col_settings.title_col]+" "+data[i][col_settings.year_start_col]}
+
+                //Since we have localized the geojson
+                if(data[i]["geojson"]){
+                     extra['annotation_url']=data[i]["local_annotation"]
+                    rect_requests= new Array(data.length)
+                    parse_annotation(JSON.parse(data[i]["geojson"]),extra)
+
+                    create_rect_group();
+                }else{
+                    load_annotation_geojson(data[i][col_settings.annotation_col]+".geojson",extra)
+                }
             }
          }
          //section_manager.toggle_overlay()
@@ -146,6 +162,7 @@ class Section_Manager {
          }
     }
     check_section_completion(data,slot){
+        console.log("check_section_completion")
         // when all the data for a section is loaded, join it together
          var $this = section_manager
          //store the data in the slot
@@ -159,7 +176,7 @@ class Section_Manager {
             }
           }
           if(all_data_loaded){
-            console_log("we have all the data")
+            console.log("we have all the data",$this.json_data[slot[0]])
             $this.join_data($this.json_data[slot[0]])
             //add parent_id to each item
             var all_data=$this.json_data[slot[0]].all_data
@@ -207,8 +224,11 @@ class Section_Manager {
         //starting with the second dataset, look for the left_join_col,right_join_col
         //When matched, map all the parameters to the first dataset
         if(section.data.length>0){
-
-            for (var j=1;j<section.data.length;j++){
+        var start=0
+            if(transcription_mode){
+                start=1
+            }
+            for (var j=start;j<section.data.length;j++){
                 var data_to_join=section.data[j]
                 var type=data_to_join[1]
 
@@ -221,7 +241,7 @@ class Section_Manager {
                     this.update_geojson_properties(section.all_data,show_cols,separated_cols,section?.image_col,section?.color_col)
 
                 }else if(type=="csv"){
-                    //console.log(transcription)
+                    console.log(transcription)
                     transcription.group_transcription($.csv.toObjects(data_to_join.data.replaceAll('\t', '')))
 
                     section.all_data=transcription.connect_transcription(section.all_data)

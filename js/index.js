@@ -147,20 +147,22 @@ load_annotation_geojson= function(url,extra){
         success: function(json) {
          parse_annotation(json,extra);
          //when all the rects have been requested
-         if(layer_rects.length==rect_requests.length){
-            rects=L.layerGroup(layer_rects , {pane: 'left'})
-            rects.addTo(map_manager.map);
-         }
+            create_rect_group();
          }
      });
 }
+create_rect_group=function(){
+    if(layer_rects.length==rect_requests.length){
+        rects=L.layerGroup(layer_rects , {pane: 'left'})
+        rects.addTo(map_manager.map);
+     }
+}
 parse_annotation= function(json,extra){
-        console.log("parse_annotation")
          var rect = L.geoJson(json, {pane: 'left',color: 'blue'})//todo get this from app.csv
          rect.title=extra["title"]
          rect.tms=extra["tms"]
          rect.url=extra["Image URL"]
-         rect['annotation_url']=extra['annotation_url']
+         rect['annotation_url']=extra['annotation_url'];
          rect.toggle="show"
          layer_rects.push(rect)
          rect.id=layer_rects.length-1
@@ -190,7 +192,7 @@ toggle_layer = function(id){
     if(layer.toggle=="show"){
         $("#layer_but_spin_"+id).show();
         layer.toggle="hide"
-        layer.map_layer =new Allmaps.WarpedMapLayer(layer['annotation_url'],{pane: 'right'})
+        layer.map_layer =new Allmaps.WarpedMapLayer(window.location.origin+"/"+layer['annotation_url'],{pane: 'right'})
         map_manager.map.addLayer(layer.map_layer)
          map_manager.map.on(
               'warpedmapadded',
