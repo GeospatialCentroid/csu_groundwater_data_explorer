@@ -32,9 +32,7 @@ class Map_Manager {
 //    }).addTo( this.map)
 
      //
-//    const search = new GeoSearch.GeoSearchControl({
-//      provider: new GeoSearch.OpenStreetMapProvider(),
-//    });
+
      L.control.layer_list({ position: 'bottomleft' }).addTo( this.map);
     var html=  "<span class='list_title'>Overprints in view</span> <input id='toggle_overprint_footprint_checkbox' type='checkbox' title='show/hide overprint footprints' checked/>"
     $("#layer_list_title").html(html)
@@ -48,7 +46,7 @@ class Map_Manager {
         }
 
     });
-    /*this.map.addControl(search);
+    /*
 
    // get lat lng on click
     this.map.on('dblclick', function(e) {

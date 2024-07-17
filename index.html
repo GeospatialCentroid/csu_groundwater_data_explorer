@@ -107,6 +107,7 @@
 
                     <div class="input-group search_wrapper">
                       <input id="search" type="text" class="form-control" placeholder="">
+                          <input id="map_search" type="text" class="form-control" placeholder="">
                         <button id="search_clear" type="button" title="Clear search" data-original-title="Clear search" class="btn bg-transparent">
                           <i class="bi bi-x-lg"></i>
                         </button>
@@ -144,17 +145,19 @@
                         <div id="results_panel" class="panel border_top">
 
                             <div id="filter_area">
+                                    <span class="toggle_text">List items <input id="toggle_hidden_checkbox" type="checkbox" value=""></span>
                                     <div id="filters" class="ui-widget" ></div>
-
-                            <label for="list_sort" id="sort-title">Sort:</label>
-                            <select id="list_sort">
-                                <option value="">Default</option>
-                                <option value="asc">Name (A-Z)</option>
-                                <option value="desc">Name (Z-A)</option>
-                            </select>
+                                <span class="hidden_controls">
+                                <label for="list_sort" id="sort-title">Sort:</label>
+                                <select id="list_sort">
+                                    <option value="">Default</option>
+                                    <option value="asc">Name (A-Z)</option>
+                                    <option value="desc">Name (Z-A)</option>
+                                </select>
                                  <span class="total_results"></span>
+                                </span>
                             </div>
-                            <div id="result_wrapper" class="scroll_wrapper">
+                            <div id="result_wrapper" class="scroll_wrapper hidden_controls">
 
                                 <div id="results">
                                         <div id="results_view"></div>

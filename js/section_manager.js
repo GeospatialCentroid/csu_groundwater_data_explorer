@@ -202,7 +202,7 @@ class Section_Manager {
              }
         }
         if (all_sections_data_loaded){
-
+            run_resize();
             //hide loader
             clearInterval($this.progress_interval)
             $("#loader").css("width", 100 + "%")

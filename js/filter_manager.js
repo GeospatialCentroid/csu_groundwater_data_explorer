@@ -26,15 +26,26 @@ class Filter_Manager {
 
         $("#search").focus();
         $("#search_clear").click(function(){
-            $("#search").val("")
-            //back to browse
-            $this.add_filter(false,null)
-            $this.filter()
-            //$this.section_manager.slide_position("browse")
+             if($this.mode=="data"){
+                $("#search").val("")
+                //back to browse
+                $this.add_filter(false,null)
+                $this.filter()
+                //$this.section_manager.slide_position("browse")
+               }else{
+                $("#map_search").val("")
+               }
         })
         ///--------
         $('input[type=radio][name=search_type]').change(function() {
             $this.mode=this.value
+            if(this.value=="data"){
+                $("#search").show();
+                $("#map_search").hide();
+            }else{
+                $("#map_search").show();
+                $("#search").hide();
+            }
         });
         //When searching - all titles are added to the auto
          $("#search_but").click(function(){
@@ -45,8 +56,8 @@ class Filter_Manager {
                //go to results
                $this.section_manager.slide_position("results")
             }else{
-                console.log($this.place_url)
-                $.get($this.place_url, { q: $("#search").val() }, function(data) {
+
+                $.get($this.place_url, { q: $("#map_search").val() }, function(data) {
                     try{
                         $this.show_place_bounds(data[0].boundingbox)
                         $("#search").val(data[0].display_name)
@@ -102,10 +113,12 @@ class Filter_Manager {
 
                 $("#search").val(ui.item.label)//.substring(0,ui.item.label.indexOf("(")-1));
                 $("#search_but").trigger("click")
+                $('#toggle_hidden_checkbox').prop("checked",true);
+                $('#toggle_hidden_checkbox').trigger("change");
             },
         focus: function(event, ui) {
             event.preventDefault();
-            $("#search").val(ui.item.label);
+           // $("#search").val(ui.item.label);
         }
 
       });

@@ -21,7 +21,7 @@ var params={}
 var last_params={}
 var usp={};// the url params object to be populated
 var browser_control=false; //flag for auto selecting to prevent repeat cals
-
+var show_hidden_controls=false;
 
 
 function setup_params(){
@@ -51,7 +51,7 @@ $( function() {
             LANG=data
             initialize_interface()
     });
-
+    $(".hidden_controls").hide();
 
 });
 
@@ -69,6 +69,43 @@ function initialize_interface() {
     $("#radio_data_label").text(LANG.SEARCH.RADIO_DATA_LABEL)
 
     $("#radio_place_label").text(LANG.SEARCH.RADIO_PLACE_LABEL)
+
+
+    $('#toggle_hidden_checkbox').change(function() {
+        if($(this).prop('checked') == true){
+            show_hidden_controls=true
+              $(".hidden_controls").show();
+        }else{
+             show_hidden_controls=false
+             $(".hidden_controls").hide();
+        }
+       run_resize();
+    });
+
+    $("#map_search").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "https://nominatim.openstreetmap.org/search?format=json",
+                dataType: "json",
+                data: {
+                    q: request.term
+                },
+                success: function(data) {
+                    var data = $.map(data, function(obj) {
+                        return {
+                            label: obj.display_name
+                        };
+                    });
+                    response(data);
+                }
+
+            });
+        },
+         select: function( event, ui ) {
+                $("#search_but").trigger("click");
+            },
+        minLength: 1,
+    });
 
     setup_params()
 
@@ -123,6 +160,7 @@ function after_filters(){
 function save_marker_data(_data){
     map_manager.data = $.csv.toObjects(_data);
     check_all_loaded();
+
 }
 
 
@@ -309,7 +347,13 @@ function run_resize_do(){
 //       }
        //-$("#tabs").outerHeight()-$("#nav_wrapper").outerHeight()
        $("#panels").height(scroll_height)
-       $(".panel").height(scroll_height)
+       $(".panel").height(scroll_height);
+
+       if(!show_hidden_controls){
+            $(".filter_list").height(scroll_height-40);
+        }else{
+            $(".filter_list").height(200);
+        }
 
 //        $("#map_panel_wrapper").height(window_height-$("#tabs").height()-minus_height)
 //        $("#map_panel_scroll").height(window_height-$("#tabs").height()-minus_height)
