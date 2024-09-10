@@ -230,7 +230,7 @@ toggle_layer = function(id){
     if(layer.toggle=="show"){
         $("#layer_but_spin_"+id).show();
         layer.toggle="hide"
-        layer.map_layer =new Allmaps.WarpedMapLayer(window.location.origin+"/"+window.location.pathname+"/"+layer['annotation_url'],{pane: 'right'})
+        layer.map_layer =new Allmaps.WarpedMapLayer(window.location.origin+"/"+window.location.pathname+"/"+layer['annotation_url'],{pane: 'left'})
         map_manager.map.addLayer(layer.map_layer)
          map_manager.map.on(
               'warpedmapadded',

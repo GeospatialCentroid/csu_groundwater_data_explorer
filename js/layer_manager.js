@@ -1028,7 +1028,7 @@ class Layer_Manager {
             }
             var val = $(this).attr('value');
             $this.basemap_layer= L.tileLayer(LANG.BASEMAP.BASEMAP_OPTIONS[val].url, {
-                maxZoom: 20,
+                maxZoom: 19,
                 attribution: LANG.BASEMAP.BASEMAP_OPTIONS[val].attribution,
                 pane:"basemap"
             }).addTo($this.map);

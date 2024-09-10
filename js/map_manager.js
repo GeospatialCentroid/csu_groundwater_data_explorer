@@ -25,12 +25,6 @@ class Map_Manager {
      this.map.createPane('left');
     var right_pane=  this.map.createPane('right');
 
-//    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//    pane: 'left',
-//    attribution:
-//    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//    }).addTo( this.map)
-
      //
 
      L.control.layer_list({ position: 'bottomleft' }).addTo( this.map);
