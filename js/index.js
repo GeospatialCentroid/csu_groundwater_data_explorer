@@ -333,18 +333,18 @@ function run_resize_do(){
         }
         var header_height=$("#header").outerHeight()+20;
         var footer_height=15//$("#footer").height()
-        var window_height= $(window).height()
-        var window_width= $(window).width()
+        var window_height= window.innerHeight
+        var window_width=window.innerWidth
         var minus_height=header_height+footer_height
-        console.log("CONTENT HEIGHT",window_height,minus_height,header_height,footer_height)
+        console.log(window.innerHeight,"CONTENT HEIGHT",window_height,minus_height,header_height,footer_height)
        $("#content").height(window_height-minus_height)
 
        $("#map_wrapper").height(window_height-minus_height-data_table_height)
        //this gets out of hannd with too many results
        var scroll_height=window_height-minus_height-$("#side_header").outerHeight()
-//       if(scroll_height>800){
-//        scroll_height=800;
-//       }
+       if(scroll_height>800){
+        scroll_height=800;
+       }
        //-$("#tabs").outerHeight()-$("#nav_wrapper").outerHeight()
        $("#panels").height(scroll_height)
        $(".panel").height(scroll_height);
