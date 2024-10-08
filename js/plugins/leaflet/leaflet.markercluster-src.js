@@ -26,6 +26,7 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 
 		// Set to false to disable all animations (zoom and spiderfy).
 		// If false, option animateAddingMarkers below has no effect.
+		// If false, option animateAddingMarkers below has no effect.
 		// If L.DomUtil.TRANSITION is falsy, this option has no effect.
 		animate: true,
 

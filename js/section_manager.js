@@ -86,7 +86,7 @@ class Section_Manager {
             for (var j=0;j< $this.json_data[i].data.length;j++){
                 // split file parts (file, type, left_join_col,right_join_col) by commas
 
-                console.log($this.json_data[i].data[j].split(","))
+                //console.log($this.json_data[i].data[j].split(","))
                 $this.json_data[i].data[j]=$this.json_data[i].data[j].split(",")
 
                 $this.load_data($this.json_data[i].data[j][0],$this.json_data[i].data[j][1],$this.check_section_completion,[i,j])
@@ -127,7 +127,7 @@ class Section_Manager {
          var col_settings= section_manager.data[_slot]
 
          //
-         console.log("we have this many maps ",data.length)
+//         console.log("we have this many maps ",data.length)
          for (var i=0; i<data.length;i++){
 
             if(data[i][col_settings.annotation_col]!=""){
@@ -232,16 +232,16 @@ class Section_Manager {
                 var data_to_join=section.data[j]
                 var type=data_to_join[1]
 
-                console.log(type,"TYPE______")
+//                console.log(type,"TYPE______")
                 if(type=="geojson"){
                     this.join_geojson(section.all_data,data_to_join.data,data_to_join[2],data_to_join[3],section["title_col"])
 
-                    console.log(section.filter_cols)
+//                    console.log(section.filter_cols)
 
                     this.update_geojson_properties(section.all_data,show_cols,separated_cols,section?.image_col,section?.color_col)
 
                 }else if(type=="csv"){
-                    console.log(transcription)
+//                    console.log(transcription)
                     transcription.group_transcription($.csv.toObjects(data_to_join.data.replaceAll('\t', '')))
 
                     section.all_data=transcription.connect_transcription(section.all_data)
@@ -442,7 +442,7 @@ class Section_Manager {
 
     }
     list_sections(){
-        console.log(this.json_data)
+//        console.log(this.json_data)
          var html= '<ul class="list-group"' +'">'
          for (var i=0;i<this.json_data.length;i++){
              var id = i

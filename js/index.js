@@ -109,6 +109,7 @@ function initialize_interface() {
 
     setup_params()
 
+
     map_manager = new Map_Manager(
      {params:params['e'] ,
         lat:40.111,
@@ -119,7 +120,9 @@ function initialize_interface() {
         elm_wrap:"data_table_wrapper",
           elm:"data_table"})
 
+
     map_manager.init()
+
 
    transcription = new Transcription({ })
      // allow for iiif viewing
@@ -336,11 +339,11 @@ function run_resize_do(){
         var window_height= window.innerHeight
         var window_width=window.innerWidth
         var minus_height=header_height+footer_height
-        console.log(window.innerHeight,"CONTENT HEIGHT",window_height,minus_height,header_height,footer_height)
+//        console.log(window.innerHeight,"CONTENT HEIGHT",window_height,minus_height,header_height,footer_height)
        $("#content").height(window_height-minus_height)
 
-       $("#map_wrapper").height(window_height-minus_height-data_table_height)
-       //this gets out of hannd with too many results
+       $("#map_wrapper").height()
+       //this gets out of hand with too many results
        var scroll_height=window_height-minus_height-$("#side_header").outerHeight()
        if(scroll_height>800){
         scroll_height=800;
@@ -378,6 +381,7 @@ function run_resize_do(){
             $("#data_table_wrapper").width(window_width-$("#side_bar").width()-1)
 
             map_manager.map.scrollWheelZoom.enable();
+            $("#side_bar").show();
        }else{
              //mobile view
 
@@ -392,6 +396,7 @@ function run_resize_do(){
             $("#data_table_wrapper").width(window_width)
 
             map_manager.map.scrollWheelZoom.disable();
+             $("#side_bar").hide();
        }
         //final sets
         $("#panels").width($("#side_bar").width())

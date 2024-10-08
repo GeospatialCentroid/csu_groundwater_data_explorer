@@ -9,7 +9,7 @@ L.Control.LayerList = L.Control.extend({
 
 
         L.DomEvent.disableClickPropagation(div)
-        console.log(div)
+//        console.log(div)
         return div;
     },
 

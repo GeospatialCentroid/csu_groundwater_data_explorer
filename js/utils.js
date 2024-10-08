@@ -238,3 +238,4 @@ L.Polygon.include({
   },
   setLatLng: function() {} // Dummy method.
 });
+

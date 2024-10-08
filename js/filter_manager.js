@@ -85,7 +85,7 @@ class Filter_Manager {
         $(".spinner-border").hide();
 
         setTimeout(() => { run_resize()} , "500");
-        console.log("run resize")
+//        console.log("run resize")
     }
     populate_search(data){
        // to make it easy to select a dataset, an autocomplete control is used and populated based on entered values
@@ -530,7 +530,7 @@ class Filter_Manager {
             item_ids= [...items_showing]
          }
          $this.show_items(parent_id,item_ids)
-         console.log("FIT THE BOUNDS ..........")
+//         console.log("FIT THE BOUNDS ..........")
          if(!$this.has_earth_param){
          //layer_manager.map.fitBounds(layer_manager.layers[layer_manager.layers.length-1].layer_obj.getBounds());
          }

@@ -291,12 +291,13 @@ class Map_Manager {
         }else{
             this.map.flyToBounds(bounds);
         }
-//         this.scroll_to_map()
+        this.scroll_to_map()
      }
      scroll_to_map(){
-//         $('html, body').animate({
-//                scrollTop: $("#map").offset().top
-//            }, 1000);
+            console.log("Scroll to map")
+         $('html, body').animate({
+                scrollTop: $("#map").offset().top
+            }, 1000);
      }
       get_selected_layer(){
         // start with the last layer (top) if not yet set - check to make use the previous selection still exists
@@ -312,6 +313,7 @@ class Map_Manager {
         return layer_manager.get_layer_obj(this.selected_layer_id);
     }
      map_click_event(lat_lng,no_page){
+
         var $this=this
         if(lat_lng){
             $this.click_lat_lng=lat_lng
