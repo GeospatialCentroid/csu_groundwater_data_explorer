@@ -28,7 +28,7 @@ class Map_Manager {
      //
 
      L.control.layer_list({ position: 'bottomleft' }).addTo( this.map);
-    var html=  "<span class='list_title'>Overprints in view</span> <input id='toggle_overprint_footprint_checkbox' type='checkbox' title='show/hide overprint footprints' checked/>"
+    var html=  "<span class='list_title'>Overprint Outlines in View</span> <input id='toggle_overprint_footprint_checkbox' type='checkbox' title='show/hide overprint footprints' checked/>"
     $("#layer_list_title").html(html)
     $('#toggle_overprint_footprint_checkbox').change(function() {
         if(this.checked) {

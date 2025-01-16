@@ -204,7 +204,7 @@ parse_annotation= function(json,extra){
          rect.tms=extra["tms"]
          rect.url=extra["Image URL"]
          rect['annotation_url']=extra['annotation_url'];
-         rect.toggle="show"
+         rect.toggle="<i class='bi bi-map'></i>"
          layer_rects.push(rect)
          rect.id=layer_rects.length-1
          rect.on('click', function () {
@@ -220,7 +220,7 @@ update_layer_list=function(){
     for(var i =0;i<layer_rects.length;i++){
         if(map_bounds.intersects(layer_rects[i].getBounds())){
 
-            html+="<a target='_blank' href='"+layer_rects[i].url+"'>"+layer_rects[i].title+"</a> <a id='layer_but_"+i+"' href='#' onclick='toggle_layer("+i+");'>"+layer_rects[i].toggle+"</a>"
+            html+=layer_rects[i].title+"  <a target='_blank' title='Show Original Overlay Map' href='"+layer_rects[i].url+"'><i class='bi bi-image'></i></a> <a id='layer_but_"+i+"' href='#' onclick='toggle_layer("+i+");' title='Show Overlay Map in View'>"+layer_rects[i].toggle+"</a>"
             html+=" <div id='layer_but_spin_"+i+"' style='display:none;' class='spinner-border spinner-border-sm' ></div>"+"<br/>"
 
         }
@@ -230,9 +230,9 @@ update_layer_list=function(){
 }
 toggle_layer = function(id){
     var layer = layer_rects[id]
-    if(layer.toggle=="show"){
+    if(layer.toggle=="<i class='bi bi-map'></i>"){
         $("#layer_but_spin_"+id).show();
-        layer.toggle="hide"
+        layer.toggle="<i title='Hide Overlay Map in View' class='bi bi-map-fill'></i>"
         layer.map_layer =new Allmaps.WarpedMapLayer(window.location.origin+"/"+window.location.pathname+"/"+layer['annotation_url'],{pane: 'left'})
         map_manager.map.addLayer(layer.map_layer)
          map_manager.map.on(
@@ -252,7 +252,7 @@ toggle_layer = function(id){
             toggle_layer(this.id)
             this.off('click')
          });
-        layer.toggle="show"
+        layer.toggle="<i class='bi bi-map'></i>"
         remove_side_by_side()
      }
      $("#layer_but_"+id).html(layer.toggle)

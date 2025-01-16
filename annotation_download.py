@@ -6,7 +6,7 @@ The following file:
 
 python3 annotation_download.py -source_file "data/Groundwater map urls.csv" -column_name Annotation -output_folder "annotations"
 
-#note be sure to add an 'local_annotation' column to the spreadsheet and use the following forumula for the value =CONCATENATE("annotations/",RIGHT(J2, 16),".json")
+#note be sure to add an 'local_annotation' column to the spreadsheet and use the following formula for the value =CONCATENATE("annotations/",RIGHT(J2, 16),".json")
 '''
 
 import argparse
